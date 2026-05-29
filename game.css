@@ -1,0 +1,46 @@
+* {
+    box-sizing: border-box;
+    font-family: "Press Start 2P", system-ui;
+}
+
+body {
+    margin: 0;
+    height: 100vh;
+    background-color: midnightblue;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.section {
+    width: 960px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.status {
+    display: flex;
+    gap: 50px;
+}
+
+#life, #score, #combo, #setting {
+    color: white;
+    font-size: 13px;
+}
+
+#setting:hover {
+    color: aqua;
+}
+
+#game {
+    border: 1px solid white;
+}
