@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="game.css">
+</head>
+<script src="sources/game/gamecomponent.js"></script>
+<script src="sources/game/bar.js"></script>
+<script src="sources/game/nyancat.js"></script>
+<script src="sources/game/poptart.js"></script>
+<script src="sources/game/game.js"></script>
+<body>
+	<div class="container">
+		<div class="section">
+			<div class="status">
+				<div id="life">Life: 3</div>
+				<div id="score">Score: 0</div>
+				<div id="combo">Combo: 0</div>	
+			</div>
+
+			<div id="level">Level 0</div>
+		</div>
+		<canvas id="game" width="1000" height="600"></canvas>		
+	</div>
+	<div class="game_over">
+		<div class="game_over_title">GAME OVER</div>
+		<div class="game_over_status">
+			<div class="game_over_list">
+				<div class="game_over_list_item">
+					<div class="game_over_list_title">Score</div>
+					<div class="game_over_list_value" id="gameover_score">0</div>
+				</div>
+				<div class="game_over_list_item">
+					<div class="game_over_list_title">Max Combo</div>
+					<div class="game_over_list_value" id="gameover_maxcombo">0</div>
+				</div>
+			</div>
+		</div>
+		<div class="game_over_buttons">
+			<div id="retry">Retry</div>
+			<div id="quit">Quit</div>
+		</div>
+	</div>
+	<div class="menu">
+		<div class="menu_button" id="resume_button">Resume</div>
+		<div class="menu_button" id="setting_button">Setting</div>
+		<div class="menu_button" id="quit_button">Quit</div>
+	</div>
+</body>
