@@ -5,7 +5,7 @@ class NyanCat extends GameComponent {
         this._y = y
         this.speed = speed
         this._dx = speed
-        this._dy = speed        
+        this._dy = Math.random() < 0.5 ? speed : -speed        
         this.size = 1
         this._height = 80 
         this._width =  80 
@@ -76,5 +76,6 @@ class NyanCat extends GameComponent {
         this.x = 80
         this.y = 300 - this.width/2 + 10
         this._dx = this.speed
+        this._dy = Math.random() < 0.5 ? this.speed : -this.speed
     }
 }

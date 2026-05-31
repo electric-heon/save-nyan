@@ -40,6 +40,12 @@ window.addEventListener("load", () => {
     menuQuitBtn.addEventListener('click', () => {
         window.location.replace("main.html")
     })
+
+    const settingPopup = document.querySelector('.setting_popup')
+
+    menuSettingBtn.addEventListener('click', () => {
+        settingPopup.style.display = 'flex'
+    })
 });
 
 
