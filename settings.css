@@ -1,3 +1,10 @@
+@font-face {
+    font-family: 'RoundedFixedsys';
+    src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_six@1.2/DungGeunMo.woff') format('woff');
+    font-weight: normal;
+    font-display: swap;
+}
+
 .setting_popup {
     position: absolute;
     top: 0;
