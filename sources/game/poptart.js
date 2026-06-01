@@ -74,7 +74,7 @@ class Poptart extends GameComponent{
 }
 
 class PoptartManager extends GameComponent {
-    constructor(row, col, gap, level) {
+    constructor(row, col, gap, level, poptartSkin) {
         super()
         this.row = row;
         this.col = col;
@@ -83,6 +83,7 @@ class PoptartManager extends GameComponent {
         this.startX = GameComponent.canvasWidth/2 + 90
         this.startY = 35
         this.map = [];
+        this.poptartSkin = poptartSkin;
 
         const TART_WIDTH = 90
         const TART_HEIGHT = 80
@@ -95,7 +96,7 @@ class PoptartManager extends GameComponent {
             const row = []
             for (let j = 0; j < col; j++) {
                 const TART_X = j * STEP_X + this.startX
-                row.push(new Poptart(TART_X, TART_Y, TART_WIDTH, TART_HEIGHT, "cherry", 1))
+                row.push(new Poptart(TART_X, TART_Y, TART_WIDTH, TART_HEIGHT, this.poptartSkin, 1))
             }
 
             this.map.push(row)

@@ -1,12 +1,45 @@
 document.addEventListener("DOMContentLoaded", () => {
-    const settingConfirmBtn = document.querySelector(".setting_confirm")
-    const settingCancelBtn = document.querySelector(".setting_cancel")
-    const settingPopup = document.querySelector(".setting_popup")
+    const settingConfirmBtn = document.querySelector(".setting_confirm");
+    const settingCancelBtn = document.querySelector(".setting_cancel");
+    const settingPopup = document.querySelector(".setting_popup");
+
+    const catSkin = document.querySelectorAll('input[name="cats"]');
+    const poptartSkin = document.querySelectorAll('input[name="poptart"]');
+
+    let selectedCat = localStorage.getItem("catSkin") || "cherry";
+    let selectedPoptart = localStorage.getItem("poptartSkin") || "cherry";
+
+    catSkin.forEach(radio => {
+        radio.addEventListener("change", () => {
+            if (radio.checked) {
+                selectedCat = radio.value;
+            }
+        });
+    });
+
+    poptartSkin.forEach(radio => {
+        radio.addEventListener("change", () => {
+            if (radio.checked) {
+                selectedPoptart = radio.value;
+            }
+        });
+    });
+
+    settingConfirmBtn.addEventListener("click", () => {
+        localStorage.setItem("catSkin", selectedCat);
+        localStorage.setItem("poptartSkin", selectedPoptart);
+
+        settingPopup.style.display = "none";
+    });
 
     settingCancelBtn.addEventListener("click", () => {
-        settingPopup.style.display = "none"
-    })
-})
+        selectedCat = localStorage.getItem("catSkin") || "cherry";
+        selectedPoptart = localStorage.getItem("poptartSkin") || "cherry";
+
+        settingPopup.style.display = "none";
+    });
+});
+
 
 
 
@@ -26,8 +59,8 @@ class Settings extends HTMLElement {
                             <div class="setting_list_description">팝 타르트 종류</div>
                         </div>
                         <div class="setting_menu">
-                            <input name="poptart" id="cherry" type="radio" checked="checked"/>
-                            <input name="poptart" id="oreo" type="radio"/>
+                            <input name="poptart" id="cherry" type="radio" value="cherry" checked="checked"/>
+                            <input name="poptart" id="oreo" type="radio" value="oreo"/>
                             <label for="cherry">
                                 <div class="setting_menu_item">Cherry</div>
                             </label>
@@ -42,8 +75,8 @@ class Settings extends HTMLElement {
                             <div class="setting_list_description">고양이 스킨 선택</div>
                         </div>
                         <div class="setting_menu">
-                            <input name="cats" id="cherrycat" type="radio" checked="checked"/>
-                            <input name="cats" id="oreocat" type="radio"/>
+                            <input name="cats" id="cherrycat" type="radio" value="cherry" checked="checked"/>
+                            <input name="cats" id="oreocat" type="radio" value="oreo" />
                             <label for="cherrycat">
                                 <div class="setting_menu_item">Cherry</div>
                             </label>

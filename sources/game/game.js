@@ -1,7 +1,9 @@
 window.addEventListener("load", () => {
 
     GameComponent.init()
-	const game = new Game
+    const catSkin = localStorage.getItem("catSkin") || "cherry";
+    const poptartSkin = localStorage.getItem("poptartSkin") || "cherry";
+	const game = new Game(catSkin, poptartSkin)
     game.start()
 
     const retryBtn = document.querySelector('#retry')
@@ -50,14 +52,14 @@ window.addEventListener("load", () => {
 
 
 class Game extends GameComponent {
-    constructor() {
+    constructor(catSkin, poptartSkin) {
         super()
         this.level = 1
         this.catSpeed = 3
         this.barSpeed = 15
         this.bar = new Bar(30, 250, 15, 100, this.barSpeed)
-        this.cat = new NyanCat(80, 270, this.catSpeed, "cherry")
-        this.popTartManager = new PoptartManager(6, 4, 10, this.level)
+        this.cat = new NyanCat(80, 270, this.catSpeed, this.catSkin)
+        this.popTartManager = new PoptartManager(6, 4, 10, this.level, this.poptartSkin)
         this.score = 0
         this.life = 3
         this.combo = 0
@@ -75,8 +77,8 @@ class Game extends GameComponent {
 
     reset() {
         this.bar = new Bar(30, 250, 15, 100, 15)
-        this.cat = new NyanCat(80, 270, this.catSpeed, "cherry")
-        this.popTartManager = new PoptartManager(6, 4, 10, this.level)
+        this.cat = new NyanCat(80, 270, this.catSpeed, this.catSkin)
+        this.popTartManager = new PoptartManager(6, 4, 10, this.level, this.poptartSkin)
         this.score = 0
         this.life = 3
         this.combo = 0
