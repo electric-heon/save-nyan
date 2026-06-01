@@ -54,6 +54,8 @@ window.addEventListener("load", () => {
 class Game extends GameComponent {
     constructor(catSkin, poptartSkin) {
         super()
+        this.catSkin
+        this.poptartSkin
         this.level = 1
         this.catSpeed = 3
         this.barSpeed = 15
