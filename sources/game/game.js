@@ -1,7 +1,9 @@
 window.addEventListener("load", () => {
 
     GameComponent.init()
-	const game = new Game
+    const catSkin = localStorage.getItem("catSkin") || "cherry";
+    const poptartSkin = localStorage.getItem("poptartSkin") || "cherry";
+	const game = new Game(catSkin, poptartSkin)
     game.start()
 
     const retryBtn = document.querySelector('#retry')
@@ -49,15 +51,16 @@ window.addEventListener("load", () => {
 
 // 게임 진행
 class Game extends GameComponent {
-    constructor() {
+    constructor(catSkin, poptartSkin) {
         super()
+        this.catSkin
+        this.poptartSkin
         this.level = 1
         this.catSpeed = 5
         this.barSpeed = 15
         this.bar = new Bar(30, 250, 15, 100, this.barSpeed)
-        this.cat = new NyanCat(80, 270, this.catSpeed, "cherry")
-        this.popTartManager = new PoptartManager(5, 5, 10, this.level)
-
+        this.cat = new NyanCat(80, 270, this.catSpeed, this.catSkin)
+        this.popTartManager = new PoptartManager(6, 4, 10, this.level, this.poptartSkin)
         this.score = 0
         this.life = 3
         this.combo = 0
@@ -73,6 +76,7 @@ class Game extends GameComponent {
         this.isPlaying = false
         this.isStarted = false
         this.isResetting = false
+
         this.lastTimestamp = null
 
         // 웜홀 객체 초기화        
@@ -86,6 +90,9 @@ class Game extends GameComponent {
             level: document.querySelector("#level"),
         }
 
+        //x는 고정, y는 0 ~ (캔버스 높이 - 웜홀 높이) 사이 랜덤
+        this.wormholeA = new Wormhole(150, Math.random() * (GameComponent.canvasHeight - 100), 100, 100, 'A');
+        this.wormholeB = new Wormhole(850, Math.random() * (GameComponent.canvasHeight - 100), 100, 100, 'B');
 
         // 스페이스바 입력 이벤트 발생 시 게임 플레이 시작
         window.addEventListener("keydown", (e) => {
@@ -101,8 +108,8 @@ class Game extends GameComponent {
     // 게임 초기화
     reset() {
         this.bar = new Bar(30, 250, 15, 100, 15)
-        this.cat = new NyanCat(80, 270, this.catSpeed, "cherry")
-        this.popTartManager = new PoptartManager(5, 5, 10, this.level)
+        this.cat = new NyanCat(80, 270, this.catSpeed, this.catSkin)
+        this.popTartManager = new PoptartManager(6, 4, 10, this.level, this.poptartSkin)
         this.score = 0
         this.life = 3
         this.combo = 0
@@ -203,11 +210,11 @@ class Game extends GameComponent {
             return
         }
 
-        //오른쪽 벽 충돌 시 방향 전환
-        if (this.cat.x + this.cat.width > GameComponent.canvasWidth) {
-            this.cat.dx = -Math.abs(this.cat.dx);
-            this.cat.x = GameComponent.canvasWidth - this.cat.width;
-        }
+        //오른쪽 벽 충돌 시 방향 전환 필요 없을 듯
+        // if (this.cat.x + this.cat.width> GameComponent.canvasWidth) {
+        //     this.cat.dx *= -1;
+        // }
+        
         //상하 벽 충돌 시 방향 전환
         if (this.cat.y + this.cat.height > GameComponent.canvasHeight) {
             this.cat.dy = -Math.abs(this.cat.dy);

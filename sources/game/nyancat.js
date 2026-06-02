@@ -6,13 +6,10 @@ class NyanCat extends GameComponent {
         this.speed = speed
         this._dx = speed
         this._dy = Math.random() < 0.5 ? speed : -speed        
-        
         this._height = 40 
         this._width =  55 
         this.size = 1
-
-        this.isWormhole = false;
-
+        
         this.catImage = new Image()
         this.catImage.src = (skin == "cherry") ? "images/nyancat-1.png" : "images/nyancat-3.svg"
         this.catImage.onload = () => {
