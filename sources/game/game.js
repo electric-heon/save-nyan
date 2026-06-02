@@ -18,15 +18,16 @@ window.addEventListener("load", () => {
         window.location.replace("main.html");
     })
 
-
     const pauseMenu = document.querySelector(".menu")
     const menuResumeBtn = document.querySelector('#resume_button')
     const menuSettingBtn = document.querySelector('#setting_button')
     const menuQuitBtn = document.querySelector('#quit_button')
-    
+    const settingPopup = document.querySelector('.setting_popup')
+
     window.addEventListener('keydown', (e) => {
         if (e.key == 'Escape') {
-            console.log("esc")
+            if (settingPopup)
+            
             pauseMenu.style.display = 'flex'
             game.pause()
         }
@@ -41,7 +42,6 @@ window.addEventListener("load", () => {
         window.location.replace("main.html")
     })
 
-    const settingPopup = document.querySelector('.setting_popup')
 
     menuSettingBtn.addEventListener('click', () => {
         settingPopup.style.display = 'flex'
@@ -53,15 +53,18 @@ class Game extends GameComponent {
     constructor() {
         super()
         this.level = 1
-        this.catSpeed = 3
+        this.catSpeed = 5
         this.barSpeed = 15
         this.bar = new Bar(30, 250, 15, 100, this.barSpeed)
         this.cat = new NyanCat(80, 270, this.catSpeed, "cherry")
-        this.popTartManager = new PoptartManager(6, 4, 10, this.level)
+        this.popTartManager = new PoptartManager(5, 5, 10, this.level)
+
         this.score = 0
         this.life = 3
         this.combo = 0
         this.maxCombo = 0
+        this.sizeStep = 0.03
+        this.size = 1
 
         this.tensec = 0
         this.sec = 0
@@ -71,21 +74,40 @@ class Game extends GameComponent {
         this.isPlaying = false
         this.isStarted = false
         this.isResetting = false
+        this.lastTimestamp = null
+
+        this.ui = {
+            life: document.querySelector("#life"),
+            score: document.querySelector("#score"),
+            combo: document.querySelector("#combo"),
+            level: document.querySelector("#level"),
+        }
+
+        window.addEventListener("keydown", (e) => {
+            if (e.key === ' ' || e.key === 'Spacebar') {
+                if (!this.isPlaying) {
+                    this.isStarted = true;
+                    this.play()
+                }
+            }
+        })
     }
 
     reset() {
         this.bar = new Bar(30, 250, 15, 100, 15)
         this.cat = new NyanCat(80, 270, this.catSpeed, "cherry")
-        this.popTartManager = new PoptartManager(6, 4, 10, this.level)
+        this.popTartManager = new PoptartManager(5, 5, 10, this.level)
         this.score = 0
         this.life = 3
         this.combo = 0
+        this.size = 1
         this.updateGameState()
     }
 
     pause() {
         cancelAnimationFrame(this.requestID)
         this.isPlaying = false
+        this.lastTimestamp = null
     }
 
     levelUp() {
@@ -121,12 +143,17 @@ class Game extends GameComponent {
         }
 
         //오른쪽 벽 충돌 시 방향 전환
-        if (this.cat.x + this.cat.width> GameComponent.canvasWidth) {
-            this.cat.dx *= -1;
+        if (this.cat.x + this.cat.width > GameComponent.canvasWidth) {
+            this.cat.dx = -Math.abs(this.cat.dx);
+            this.cat.x = GameComponent.canvasWidth - this.cat.width;
         }
         //상하 벽 충돌 시 방향 전환
-        if (this.cat.y + this.cat.height> GameComponent.canvasHeight || this.cat.y < 0) {
-            this.cat.dy *= -1;
+        if (this.cat.y + this.cat.height > GameComponent.canvasHeight) {
+            this.cat.dy = -Math.abs(this.cat.dy);
+            this.cat.y = GameComponent.canvasHeight - this.cat.height;
+        } else if (this.cat.y < 0) {
+            this.cat.dy = Math.abs(this.cat.dy);
+            this.cat.y = 0;
         }
         //왼쪽 벽 충돌 시
         if(!this.isResetting && this.cat.x < 0){
@@ -164,51 +191,71 @@ class Game extends GameComponent {
             const axis = this.bar.collisionAxis(this.cat)
             if (axis == 'x') {
                 this.cat.dx *= -1
+                if (this.cat.dx > 0) {
+                    this.cat.x = this.bar.x + this.bar.width
+                } else {
+                    this.cat.x = this.bar.x - this.cat.width
+                }
             } else if (axis == 'y') {
-                this.cat.dy *= -1
+                if (this.cat.y + this.cat.height / 2 < this.bar.y + this.bar.height / 2) {
+                    this.cat.dy = -Math.abs(this.cat.dy)
+                    this.cat.y = this.bar.y - this.cat.height
+                } else {
+                    this.cat.dy = Math.abs(this.cat.dy)
+                    this.cat.y = this.bar.y + this.bar.height
+                }
             }
         }
 
+        // 팝타르트와 충돌 시
         if (this.popTartManager.handleCollision(this.cat)) {
             this.combo++
             this.score += this.combo * 7
-
             this.maxCombo = Math.max(this.combo, this.maxCombo)
+
+            if (this.size < 1.5) {
+                this.size += this.sizeStep
+                this.cat.resize(this.size)
+            }
         }
 
         if (!this.isResetting) {
-            this.cat.x += this.cat.dx;
-            this.cat.y += this.cat.dy;
-        } else {
+            this.cat.x += this.cat.dx * this._factor;
+            this.cat.y += this.cat.dy * this._factor;
         }
     }
-
+    
     updateGameState() {
-        const life = document.querySelector("#life")
-        const score = document.querySelector("#score")
-        const combo = document.querySelector("#combo")
-        const level = document.querySelector('#level')
-
-        life.innerHTML = `Life: ${this.life}`
-        score.innerHTML = `Score: ${this.score}`
-        combo.innerHTML = `Combo: ${this.combo}`
-        level.innerHTML = `Level ${this.level}`
+        const lifeText  = `Life: ${this.life}`
+        const scoreText = `Score: ${this.score}`
+        const comboText = `Combo: ${this.combo}`
+        const levelText = `Stage ${this.level}`
+        if (this.ui.life.textContent  !== lifeText)  this.ui.life.textContent  = lifeText
+        if (this.ui.score.textContent !== scoreText) this.ui.score.textContent = scoreText
+        if (this.ui.combo.textContent !== comboText) this.ui.combo.textContent = comboText
+        if (this.ui.level.textContent !== levelText) this.ui.level.textContent = levelText
     }
 
-    play() {
+    play(timestamp = performance.now()) {
         if (!this.isStarted) {
             return
         }
+
+        if (this.lastTimestamp === null) this.lastTimestamp = timestamp
+        // deltaTime을 50ms로 제한해 탭 전환 후 복귀 시 폭발적 이동 방지
+        const deltaTime = Math.min(timestamp - this.lastTimestamp, 50)
+        this.lastTimestamp = timestamp
+        this._factor = deltaTime / (1000 / 60)
 
         this.isPlaying = true;
     	GameComponent.context.clearRect(0, 0, GameComponent.canvasWidth, GameComponent.canvasHeight);
         if (!this.isResetting) {
             this.updateCat()
             if (!this.isPlaying) return;
-            this.bar.update(key);
+            this.bar.update(key, this._factor);
             this.popTartManager.draw();
             this.updateGameState()
-    	    this.requestID = requestAnimationFrame(() => this.play());
+    	    this.requestID = requestAnimationFrame((ts) => this.play(ts));
         }
     }
 
@@ -218,13 +265,5 @@ class Game extends GameComponent {
         this.bar.update(key);
         this.popTartManager.draw();
         this.cat.draw()
-        window.addEventListener("keydown", (e) => {
-            if (e.key === ' ' || e.key === 'Spacebar') {
-                if (!this.isPlaying) {
-                    this.isStarted = true;
-                    this.play()
-                }
-            }
-        })
     }
 }

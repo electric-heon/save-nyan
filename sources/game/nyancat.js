@@ -6,12 +6,19 @@ class NyanCat extends GameComponent {
         this.speed = speed
         this._dx = speed
         this._dy = Math.random() < 0.5 ? speed : -speed        
-        this.size = 1
         this._height = 80 
         this._width =  80 
+        this.size = 1
         this.catImage = new Image()
         this.catImage.onload = () => this.draw()
         this.catImage.src = (skin == "cherry") ? "images/nyancat-1.svg" : "images/nyancat-3.svg"
+    }
+
+    reset() {
+        this.x = 80
+        this.y = 300 - this.width/2 + 10
+        this._dx = this.speed
+        this._dy = Math.random() < 0.5 ? this.speed : -this.speed
     }
 
     draw() {
@@ -22,6 +29,12 @@ class NyanCat extends GameComponent {
 
     erase() {
         GameComponent.context.clearRect(this.catImage, this._x, this._y, this._width, this._height);        
+    }
+
+    resize(size) {
+        this.size = size
+        this._height = 80 * size
+        this._width = 80 * size 
     }
 
     get x() {
@@ -70,12 +83,5 @@ class NyanCat extends GameComponent {
 
     set height(height) {
         this._height = height
-    }
-
-    reset() {
-        this.x = 80
-        this.y = 300 - this.width/2 + 10
-        this._dx = this.speed
-        this._dy = Math.random() < 0.5 ? this.speed : -this.speed
     }
 }

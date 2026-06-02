@@ -80,12 +80,12 @@ class PoptartManager extends GameComponent {
         this.col = col;
         this.gap = gap;
         this.level = level;
-        this.startX = GameComponent.canvasWidth/2 + 90
-        this.startY = 35
+        this.startX = GameComponent.canvasWidth/2 + 40
+        this.startY = 57.5
         this.map = [];
 
-        const TART_WIDTH = 90
-        const TART_HEIGHT = 80
+        const TART_WIDTH = 70
+        const TART_HEIGHT = 90
 
         const STEP_X =  TART_WIDTH + this.gap
         const STEP_Y = TART_HEIGHT + this.gap

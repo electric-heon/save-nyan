@@ -6,6 +6,12 @@ document.addEventListener("DOMContentLoaded", () => {
     settingCancelBtn.addEventListener("click", () => {
         settingPopup.style.display = "none"
     })
+
+    document.addEventListener("keydown", (e) => {
+        if (e.key == 'Escape') {
+            settingPopup.style.display = "none"
+        }
+    })
 })
 
 

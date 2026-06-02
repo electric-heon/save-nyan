@@ -23,13 +23,13 @@ class Bar extends GameComponent {
         this.speed = speed;
     }
 
-    move(key) {
+    move(key, factor = 1) {
         if (key.up) {
-            this.y -= this.speed;
+            this.y -= this.speed * factor;
         }
 
         if (key.down) {
-            this.y += this.speed;
+            this.y += this.speed * factor;
         }
 
         if (this.y < 0) {
@@ -82,8 +82,8 @@ class Bar extends GameComponent {
         this.y = 250
     }
 
-    update(key) {
-    	this.move(key)
+    update(key, factor = 1) {
+    	this.move(key, factor)
     	this.draw()
     }
 }
