@@ -11,7 +11,7 @@ class NyanCat extends GameComponent {
         this.size = 1
         
         this.catImage = new Image()
-        this.catImage.src = (skin == "cherry") ? "images/nyancat-1.png" : "images/nyancat-3.svg"
+        this.catImage.src =  "images/nyancat-1.png"
         this.catImage.onload = () => {
             this.draw()
         }

@@ -12,7 +12,7 @@ class Poptart extends GameComponent{
         this._hitCount = 0
 
         if (!Poptart.images[flavor]) {
-            const src = flavor == "cherry" ? "images/poptart-1.png" : "images/poptart-2.svg"
+            const src =  "images/poptart-1.png"
             const img = new Image()
             Poptart.images[flavor] = img
             img.src = src

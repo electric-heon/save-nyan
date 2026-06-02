@@ -35,6 +35,11 @@ window.addEventListener("load", () => {
         }
     })
 
+    window.addEventListener('blur', () => {
+        pauseMenu.style.display = 'flex'
+        game.pause()
+    })
+
     menuResumeBtn.addEventListener('click', () => {
         pauseMenu.style.display = 'none'
         game.play()
@@ -60,7 +65,7 @@ class Game extends GameComponent {
         this.barSpeed = 15
         this.bar = new Bar(30, 250, 15, 100, this.barSpeed)
         this.cat = new NyanCat(80, 270, this.catSpeed, this.catSkin)
-        this.popTartManager = new PoptartManager(6, 4, 10, this.level, this.poptartSkin)
+        this.popTartManager = new PoptartManager(5, 5, 10, this.level, this.poptartSkin)
         this.score = 0
         this.life = 3
         this.combo = 0
@@ -89,11 +94,7 @@ class Game extends GameComponent {
             combo: document.querySelector("#combo"),
             level: document.querySelector("#level"),
         }
-
-        //x는 고정, y는 0 ~ (캔버스 높이 - 웜홀 높이) 사이 랜덤
-        this.wormholeA = new Wormhole(150, Math.random() * (GameComponent.canvasHeight - 100), 100, 100, 'A');
-        this.wormholeB = new Wormhole(850, Math.random() * (GameComponent.canvasHeight - 100), 100, 100, 'B');
-
+        
         // 스페이스바 입력 이벤트 발생 시 게임 플레이 시작
         window.addEventListener("keydown", (e) => {
             if (e.key === ' ' || e.key === 'Spacebar') {
@@ -109,7 +110,7 @@ class Game extends GameComponent {
     reset() {
         this.bar = new Bar(30, 250, 15, 100, 15)
         this.cat = new NyanCat(80, 270, this.catSpeed, this.catSkin)
-        this.popTartManager = new PoptartManager(6, 4, 10, this.level, this.poptartSkin)
+        this.popTartManager = new PoptartManager(5, 5, 10, this.level, this.poptartSkin)
         this.score = 0
         this.life = 3
         this.combo = 0
