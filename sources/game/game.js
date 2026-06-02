@@ -234,10 +234,10 @@ class Game extends GameComponent {
                 gaemOverScore.innerHTML = this.score
                 gameOverMaxCombo.innerHTML = this.maxCombo
             } else {
+                cancelAnimationFrame(this.requestID)
                 this.isResetting = true
                 this.cat.erase()
                 this.bar.erase()
-                cancelAnimationFrame(this.requestID)
                 setTimeout(() => {
                     this.combo = 0
                     this.cat.reset()
@@ -286,9 +286,8 @@ class Game extends GameComponent {
         if (!this.isResetting) {
             this.cat.x += this.cat.dx * this._factor;
             this.cat.y += this.cat.dy * this._factor;
+            this.cat.draw();
         }
-
-        this.cat.draw();
     }
 
     
@@ -320,7 +319,7 @@ class Game extends GameComponent {
         if (!this.isResetting) {
             this.requestID = requestAnimationFrame((ts) => this.play(ts));
             this.updateCat()
-            if (!this.isPlaying) return;
+            if (!this.isPlaying || this.isResetting) return;
             this.bar.update(key, this._factor);
             this.popTartManager.draw();
             this.updateGameState()
@@ -332,7 +331,6 @@ class Game extends GameComponent {
         GameComponent.context.clearRect(0, 0, GameComponent.canvasWidth, GameComponent.canvasHeight);
         this.updateGameState()
         this.bar.update(key);
-        console.log("start")
         this.popTartManager.draw();
         this.cat.draw()
     }
