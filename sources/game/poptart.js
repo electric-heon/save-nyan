@@ -121,10 +121,12 @@ class PoptartManager extends GameComponent {
                     continue
                 }
                 if (this.map[i][j].collidesWith(cat)) {
-                    if (this.map[i][j].collisionAxis(cat) == 'x') {
-                        cat.dx *= -1
-                    } else if (this.map[i][j].collisionAxis(cat) == 'y') {
-                        cat.dy *= -1
+                    if(!cat.isWormhole) {
+                        if (this.map[i][j].collisionAxis(cat) == 'x') {
+                            cat.dx *= -1
+                        } else if (this.map[i][j].collisionAxis(cat) == 'y') {
+                            cat.dy *= -1
+                        }
                     }
                     this.map[i][j].hitCount++
                     if (this.map[i][j].durability == this.map[i][j].hitCount) {

@@ -9,6 +9,7 @@ class NyanCat extends GameComponent {
         this.size = 1
         this._height = 80 
         this._width =  80 
+        this.isWormhole = false;
         this.catImage = new Image()
         this.catImage.onload = () => this.draw()
         this.catImage.src = (skin == "cherry") ? "images/nyancat-1.svg" : "images/nyancat-3.svg"
