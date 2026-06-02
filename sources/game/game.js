@@ -75,6 +75,10 @@ class Game extends GameComponent {
         this.isResetting = false
         this.lastTimestamp = null
 
+        // 웜홀 객체 초기화        
+        this.wormholeA = new Wormhole(150, Math.random() * (GameComponent.canvasHeight - 100), 100, 100, 'A');
+        this.wormholeB = new Wormhole(850, Math.random() * (GameComponent.canvasHeight - 100), 100, 100, 'B');
+
         this.ui = {
             life: document.querySelector("#life"),
             score: document.querySelector("#score"),
@@ -94,6 +98,7 @@ class Game extends GameComponent {
         })
     }
 
+    // 게임 초기화
     reset() {
         this.bar = new Bar(30, 250, 15, 100, 15)
         this.cat = new NyanCat(80, 270, this.catSpeed, "cherry")
@@ -103,7 +108,9 @@ class Game extends GameComponent {
         this.combo = 0
         this.size = 1
         this.updateGameState()
-    }
+
+        this.wormholeA = new Wormhole(150, Math.random() *100, 100, 100, 'A');
+        this.wormholeB = new Wormhole(850, Math.random() * (GameComponent.canvasHeight - 100), 100, 100, 'B');    }
 
     // 게임 중 esc 키 입력 시 일시정지 처리
     pause() {
@@ -135,7 +142,58 @@ class Game extends GameComponent {
     }
 
     updateCat() {        
-        this.cat.draw();
+
+        //----------------------------------------------------------------
+        // 웜홀 기능 구현
+        //----------------------------------------------------------------
+        this.wormholeA.draw();
+        this.wormholeB.draw();
+
+        let startWH = null;
+        let targetWH = null;
+
+        // 웜홀 A에 닿으면 B로 돌진, B에 닿으면 A로 돌진
+        if (this.wormholeA.collidesWith(this.cat)) {
+            startWH = this.wormholeA;
+            targetWH = this.wormholeB;
+        } else if (this.wormholeB.collidesWith(this.cat)) {
+            startWH = this.wormholeB;
+            targetWH = this.wormholeA;
+        }
+
+        if (startWH && targetWH) {
+            this.cat.isWormhole = true; // 돌진 상태 활성화
+
+            // 방향 계산 (목표 웜홀 중심 방향)
+            const diffX = targetWH.x - this.cat.x;
+            const diffY = targetWH.y - this.cat.y;
+            const angle = Math.atan2(diffY, diffX);
+            
+            const rushSpeed = this.catSpeed * 4; // 4배 속도
+            this.cat.dx = Math.cos(angle) * rushSpeed;
+            this.cat.dy = Math.sin(angle) * rushSpeed;
+
+            // 사용 완료 후 비활성화
+            this.wormholeA.isActive = false;
+            this.wormholeB.isActive = false;
+        }
+
+        // 2. 오른쪽 벽 충돌 시 돌진 해제 
+        if (this.cat.x + this.cat.width > GameComponent.canvasWidth) {
+            
+            this.cat.x = GameComponent.canvasWidth - this.cat.width;
+            
+            if (this.cat.isWormhole) {
+                this.cat.isWormhole = false; // 돌진 해제
+                this.cat.dx = -this.catSpeed; // 원래 속도로 반사
+                this.cat.dy = (this.cat.dy > 0 ? 1 : -1) * this.catSpeed;
+            } else {
+                this.cat.dx *= -1;
+            }
+        }
+
+
+
 
         if (this.popTartManager.isCleared()) {
             cancelAnimationFrame(this.requestID)
@@ -229,6 +287,8 @@ class Game extends GameComponent {
             this.cat.x += this.cat.dx * this._factor;
             this.cat.y += this.cat.dy * this._factor;
         }
+
+        this.cat.draw();
     }
 
     

@@ -120,21 +120,25 @@ class PoptartManager extends GameComponent {
     }
 
 
-    // cat과 충돌시 null 대입
+    // cat과 충돌 처리
     handleCollision(cat) {
+        if (cat.isWormhole) {
+            return false
+        }
+        
         for (let i = 0; i < this.row; i++) {
             for (let j = 0; j < this.col; j++) {
                 if (this.map[i][j] == null) {
                     continue
                 }
-                if (this.map[i][j].collidesWith(cat)) {
+                if (this.map[i][j].collidesWith(cat)) {         // 충돌 후 방향 전환
                     if (this.map[i][j].collisionAxis(cat) == 'x') {
                         cat.dx *= -1
                     } else if (this.map[i][j].collisionAxis(cat) == 'y') {
                         cat.dy *= -1
                     }
-                    this.map[i][j].hitCount++
-                    if (this.map[i][j].durability == this.map[i][j].hitCount) {
+                    this.map[i][j].hitCount++                   // 충돌 횟수 증가
+                    if (this.map[i][j].durability == this.map[i][j].hitCount) {   // 내구도 0 도달 시 팝 타르트 삭제
                         this.map[i][j].erase()
                         this.map[i][j] = null
 
