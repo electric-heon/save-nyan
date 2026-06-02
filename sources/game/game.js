@@ -42,13 +42,12 @@ window.addEventListener("load", () => {
         window.location.replace("main.html")
     })
 
-
     menuSettingBtn.addEventListener('click', () => {
         settingPopup.style.display = 'flex'
     })
 });
 
-
+// 게임 진행
 class Game extends GameComponent {
     constructor() {
         super()
@@ -63,7 +62,7 @@ class Game extends GameComponent {
         this.life = 3
         this.combo = 0
         this.maxCombo = 0
-        this.sizeStep = 0.03
+        this.sizeStep = 0.02
         this.size = 1
 
         this.tensec = 0
@@ -83,6 +82,8 @@ class Game extends GameComponent {
             level: document.querySelector("#level"),
         }
 
+
+        // 스페이스바 입력 이벤트 발생 시 게임 플레이 시작
         window.addEventListener("keydown", (e) => {
             if (e.key === ' ' || e.key === 'Spacebar') {
                 if (!this.isPlaying) {
@@ -104,12 +105,14 @@ class Game extends GameComponent {
         this.updateGameState()
     }
 
+    // 게임 중 esc 키 입력 시 일시정지 처리
     pause() {
         cancelAnimationFrame(this.requestID)
         this.isPlaying = false
         this.lastTimestamp = null
     }
 
+    // 레벨 증가 시 난이도 조절
     levelUp() {
         this.level++
 
@@ -158,7 +161,9 @@ class Game extends GameComponent {
         //왼쪽 벽 충돌 시
         if(!this.isResetting && this.cat.x < 0){
             this.life--
+            // 수명 감소 후 남은 수명이 0이면
             if (this.life == 0) {
+                
                 cancelAnimationFrame(this.requestID)
                 this.isPlaying = false
                 this.isStarted = false
@@ -171,10 +176,10 @@ class Game extends GameComponent {
                 gaemOverScore.innerHTML = this.score
                 gameOverMaxCombo.innerHTML = this.maxCombo
             } else {
-                this.bar.erase()
-                this.cat.erase()
-                cancelAnimationFrame(this.requestID)
                 this.isResetting = true
+                this.cat.erase()
+                this.bar.erase()
+                cancelAnimationFrame(this.requestID)
                 setTimeout(() => {
                     this.combo = 0
                     this.cat.reset()
@@ -186,6 +191,7 @@ class Game extends GameComponent {
             }
         }
 
+        // 고양이와 바 충돌시
         if (this.bar.collidesWith(this.cat)) {
             this.combo = 0
             const axis = this.bar.collisionAxis(this.cat)
@@ -224,6 +230,7 @@ class Game extends GameComponent {
             this.cat.y += this.cat.dy * this._factor;
         }
     }
+
     
     updateGameState() {
         const lifeText  = `Life: ${this.life}`
@@ -236,6 +243,7 @@ class Game extends GameComponent {
         if (this.ui.level.textContent !== levelText) this.ui.level.textContent = levelText
     }
 
+    // 게임 플레이 시작
     play(timestamp = performance.now()) {
         if (!this.isStarted) {
             return
@@ -246,23 +254,25 @@ class Game extends GameComponent {
         const deltaTime = Math.min(timestamp - this.lastTimestamp, 50)
         this.lastTimestamp = timestamp
         this._factor = deltaTime / (1000 / 60)
-
         this.isPlaying = true;
-    	GameComponent.context.clearRect(0, 0, GameComponent.canvasWidth, GameComponent.canvasHeight);
+
+        GameComponent.context.clearRect(0, 0, GameComponent.canvasWidth, GameComponent.canvasHeight);
         if (!this.isResetting) {
+            this.requestID = requestAnimationFrame((ts) => this.play(ts));
             this.updateCat()
             if (!this.isPlaying) return;
             this.bar.update(key, this._factor);
             this.popTartManager.draw();
             this.updateGameState()
-    	    this.requestID = requestAnimationFrame((ts) => this.play(ts));
         }
     }
 
+    // 게임 화면 로드
     start() {
         GameComponent.context.clearRect(0, 0, GameComponent.canvasWidth, GameComponent.canvasHeight);
         this.updateGameState()
         this.bar.update(key);
+        console.log("start")
         this.popTartManager.draw();
         this.cat.draw()
     }

@@ -1,3 +1,5 @@
+
+// Canvas 정보, context 저장
 class GameComponent {
     static canvas;
     static canvasWidth;

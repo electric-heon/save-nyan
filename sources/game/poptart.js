@@ -1,21 +1,21 @@
 class Poptart extends GameComponent{
+    static images = {}
+
     constructor(x, y, width, height, flavor, durability) {
         super()
         this.x = x
         this.y = y
         this.width = width
         this.height = height
+        this.flavor = flavor
         this._durability = durability
         this._hitCount = 0
 
-        if (flavor == "cherry") {
-            this.image = new Image()
-            this.image.onload = () => this.draw()
-            this.image.src = "images/poptart-1.svg"
-        } else if (flavor == "oreo") {
-            this.image = new Image()
-            this.image.onload = () => this.draw()
-            this.image.src = "images/poptart-2.svg"
+        if (!Poptart.images[flavor]) {
+            const src = flavor == "cherry" ? "images/poptart-1.png" : "images/poptart-2.svg"
+            const img = new Image()
+            Poptart.images[flavor] = img
+            img.src = src
         }
     }
 
@@ -36,8 +36,11 @@ class Poptart extends GameComponent{
     }
 
     draw() {
-        if (this.image && this.image.complete) {
-            GameComponent.context.drawImage(this.image, this.x, this.y, this.width, this.height)
+        const src = Poptart.images[this.flavor]
+        if (src instanceof ImageBitmap) {
+            GameComponent.context.drawImage(src, this.x, this.y, this.width, this.height)
+        } else if (src instanceof HTMLImageElement && src.complete) {
+            GameComponent.context.drawImage(src, this.x, this.y, this.width, this.height)
         }
     }
 
@@ -90,9 +93,12 @@ class PoptartManager extends GameComponent {
         const STEP_X =  TART_WIDTH + this.gap
         const STEP_Y = TART_HEIGHT + this.gap
 
+
+        // 팝타르트 객체 배열 초기화
         for (let i = 0; i < row; i++) {
             const TART_Y = i * STEP_Y + this.startY
             const row = []
+
             for (let j = 0; j < col; j++) {
                 const TART_X = j * STEP_X + this.startX
                 row.push(new Poptart(TART_X, TART_Y, TART_WIDTH, TART_HEIGHT, "cherry", 1))
@@ -113,6 +119,8 @@ class PoptartManager extends GameComponent {
         }
     }
 
+
+    // cat과 충돌시 null 대입
     handleCollision(cat) {
         for (let i = 0; i < this.row; i++) {
             for (let j = 0; j < this.col; j++) {

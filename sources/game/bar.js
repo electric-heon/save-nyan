@@ -50,6 +50,7 @@ class Bar extends GameComponent {
         GameComponent.context.clearRect(this.x, this.y, this.width, this.height);
     }
 
+    // cat과 충돌 여부 반환
     collidesWith(cat) {
         return  cat.x < this.x + this.width &&
                 cat.x + cat.width > this.x &&
@@ -57,6 +58,7 @@ class Bar extends GameComponent {
                 cat.y + cat.height > this.y        
     }
 
+    // cat과 충돌한 방향 반환
     collisionAxis(cat) {
         const catLeft   = cat.x;
         const catRight  = cat.x + cat.width ;
