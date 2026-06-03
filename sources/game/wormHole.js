@@ -6,9 +6,15 @@
         this.width = width;
         this.height = height;
         this.id = id;
+        
         this.isActive = true; // 스테이지 시작 시 활성화
         this.image = new Image();
         this.image.src = "images/wormhole.png"; // 웜홀 이미지 경로
+
+        this.image.onload = () => {
+            this.draw()
+        }
+
     }
 
     draw() {

@@ -85,9 +85,9 @@ class Game extends GameComponent {
 
         this.lastTimestamp = null
 
-        // 웜홀 객체 초기화        
+        // 웜홀 객체 초기화
         this.wormholeA = new Wormhole(150, Math.random() * (GameComponent.canvasHeight - 100), 100, 100, 'A');
-        this.wormholeB = new Wormhole(850, Math.random() * (GameComponent.canvasHeight - 100), 100, 100, 'B');
+        this.wormholeB = new Wormhole(400, Math.random() * (GameComponent.canvasHeight - 100), 100, 100, 'B');
 
         this.ui = {
             life: document.querySelector("#life"),
@@ -120,7 +120,7 @@ class Game extends GameComponent {
         this.updateGameState()
 
         this.wormholeA = new Wormhole(150, Math.random() *100, 100, 100, 'A');
-        this.wormholeB = new Wormhole(850, Math.random() * (GameComponent.canvasHeight - 100), 100, 100, 'B');
+        this.wormholeB = new Wormhole(400, Math.random() * (GameComponent.canvasHeight - 100), 100, 100, 'B');
     }
 
     //행성 배치 금지구역
@@ -133,9 +133,11 @@ class Game extends GameComponent {
         ]
     }
 
+    // 왼쪽 벽 충돌 시 처리 
     handleCatCrash() {
         this.life--
 
+        // 수명 0 도달 시 게임 오버 화면 표시
         if (this.life == 0) {
             cancelAnimationFrame(this.requestID)
             this.isPlaying = false
@@ -185,34 +187,31 @@ class Game extends GameComponent {
                 this.catSpeed = 7
                 this.barSpeed = 24
                 break
-            case 4:
-                this.catSpeed = 9
-                this.barSpeed = 30
-                break
         }
 
         this.reset()
     }
 
-    updateCat() {        
 
-        //----------------------------------------------------------------
-        // 웜홀 기능 구현
-        //----------------------------------------------------------------
-        this.wormholeA.draw();
-        this.wormholeB.draw();
-        this.planetManager.draw();
-
+    // 고양이 동작 업데이트
+    updateCat() {              
+        
+        // 스테이지 클리어 확인
+        if (this.popTartManager.isCleared()) {
+            cancelAnimationFrame(this.requestID)
+            this.isPlaying = false
+            this.levelUp()
+            this.start()
+            return
+        }  
+        
         let startWH = null;
         let targetWH = null;
 
-        // 웜홀 A에 닿으면 B로 돌진, B에 닿으면 A로 돌진
+        // 웜홀 A에 닿으면 B로 돌진
         if (this.wormholeA.collidesWith(this.cat)) {
             startWH = this.wormholeA;
             targetWH = this.wormholeB;
-        } else if (this.wormholeB.collidesWith(this.cat)) {
-            startWH = this.wormholeB;
-            targetWH = this.wormholeA;
         }
 
         if (startWH && targetWH) {
@@ -232,7 +231,13 @@ class Game extends GameComponent {
             this.wormholeB.isActive = false;
         }
 
-        // 2. 오른쪽 벽 충돌 시 돌진 해제 
+
+
+        
+        //----------------------------------------------------------------
+        // 충돌 시 처리
+        //----------------------------------------------------------------
+        // 1. 오른쪽 벽 충돌 
         if (this.cat.x + this.cat.width > GameComponent.canvasWidth) {
             
             this.cat.x = GameComponent.canvasWidth - this.cat.width;
@@ -246,24 +251,8 @@ class Game extends GameComponent {
             }
         }
 
-        if (this.planetManager.handleCollision(this.cat)) {
-            this.combo = 0
-        }
-
-        if (this.popTartManager.isCleared()) {
-            cancelAnimationFrame(this.requestID)
-            this.isPlaying = false
-            this.levelUp()
-            this.start()
-            return
-        }
-
-        //오른쪽 벽 충돌 시 방향 전환 필요 없을 듯
-        // if (this.cat.x + this.cat.width> GameComponent.canvasWidth) {
-        //     this.cat.dx *= -1;
-        // }
-        
-        //상하 벽 충돌 시 방향 전환
+                
+        // 2. 상하 벽 충돌 시 방향 전환
         if (this.cat.y + this.cat.height > GameComponent.canvasHeight) {
             this.cat.dy = -Math.abs(this.cat.dy);
             this.cat.y = GameComponent.canvasHeight - this.cat.height;
@@ -271,14 +260,31 @@ class Game extends GameComponent {
             this.cat.dy = Math.abs(this.cat.dy);
             this.cat.y = 0;
         }
-        //왼쪽 벽 충돌 시
+
+        // 3. 왼쪽 벽 충돌 시
         if(!this.isResetting && this.cat.x < 0){
             this.handleCatCrash()
             return
-            // 수명 감소 후 남은 수명이 0이면
         }
 
-        // 고양이와 바 충돌시
+        // 4. 행성과 충돌 시
+        if (this.planetManager.handleCollision(this.cat)) {
+            this.combo = 0
+        }
+
+        // 4. 팝타르트와 충돌 시
+        if (this.popTartManager.handleCollision(this.cat)) {
+            this.combo++
+            this.score += this.combo * 7
+            this.maxCombo = Math.max(this.combo, this.maxCombo)
+
+            if (this.size < 1.5) {
+                this.size += this.sizeStep
+                this.cat.resize(this.size)
+            }
+        }
+
+        // 5. 고양이와 바 충돌시
         if (this.bar.collidesWith(this.cat)) {
             this.combo = 0
             const axis = this.bar.collisionAxis(this.cat)
@@ -300,17 +306,7 @@ class Game extends GameComponent {
             }
         }
 
-        // 팝타르트와 충돌 시
-        if (this.popTartManager.handleCollision(this.cat)) {
-            this.combo++
-            this.score += this.combo * 7
-            this.maxCombo = Math.max(this.combo, this.maxCombo)
 
-            if (this.size < 1.5) {
-                this.size += this.sizeStep
-                this.cat.resize(this.size)
-            }
-        }
 
         if (!this.isResetting) {
             // 행성 중력 적용 후 고양이 이동 및 출력
@@ -318,6 +314,9 @@ class Game extends GameComponent {
             this.cat.x += this.cat.dx * this._factor;
             this.cat.y += this.cat.dy * this._factor;
             this.cat.draw();
+            this.wormholeA.draw();
+            this.wormholeB.draw();
+            this.planetManager.draw();
         }
     }
 
@@ -364,6 +363,8 @@ class Game extends GameComponent {
         this.bar.update(key);
         this.planetManager.draw();
         this.popTartManager.draw();
+        this.wormholeA.draw()
+        this.wormholeB.draw()
         this.cat.draw()
     }
 }

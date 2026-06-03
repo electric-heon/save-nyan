@@ -1,6 +1,6 @@
 const characters = {
-    hero: { name: "주인공", portrait: "character1.jpg" },
-    villain: { name: "악당", portrait: "character2.jpg" },
+    hero: { name: "주인공", portrait: "../images/nyancat-1.png" },
+    villain: { name: "악당", portrait: "../images/nyancat-2.svg" },
     girlfriend: { name: "여친", portrait: "character3.jpg" }
 };
 
@@ -16,25 +16,25 @@ const dialogueScript = [
 
 let currentLine = 0;
 
-function updateDialogue() {
+const updateDialogue = () => {
     const nameLabel = document.getElementById("charName");
     const textBox = document.getElementById("dialogueText");
     const nextBtn = document.getElementById("nextBtn");
 
     if (currentLine >= dialogueScript.length) {
-    nameLabel.textContent = "";
-    textBox.textContent = "== 대화 종료. 전투가 시작됩니다! ==";
-    nextBtn.style.display = "none";
+        nameLabel.textContent = "";
+        textBox.textContent = "== 대화 종료. 전투가 시작됩니다! ==";    
+        nextBtn.style.display = "none";
 
-    document.getElementById("heroPortrait").className = "portrait-img inactive-portrait";
-    document.getElementById("villainPortrait").className = "portrait-img inactive-portrait";
-    document.getElementById("girlfriendPortrait").className = "portrait-img inactive-portrait";
+        document.getElementById("heroPortrait").className = "portrait-img inactive-portrait";
+        document.getElementById("villainPortrait").className = "portrait-img inactive-portrait";
+        document.getElementById("girlfriendPortrait").className = "portrait-img inactive-portrait";
 
-    document.querySelector(".left-portrait").style.display = "none";
-    document.querySelector(".right-portrait").style.display = "none";
+        document.querySelector(".left-portrait").style.display = "none";
+        document.querySelector(".right-portrait").style.display = "none";
 
-    return;
-}
+        return;
+    }
     const line = dialogueScript[currentLine];
 
     nameLabel.textContent = line.character.name;
@@ -58,7 +58,7 @@ function updateDialogue() {
     currentLine++;
 }
 
-function startScene() {
+const startScene = () => {
     document.getElementById("dialogueBox").classList.add("active");
     updateDialogue();
 }

@@ -39,6 +39,11 @@ class Planet extends GameComponent {
         // draw()에서 랜덤으로 고르면 계속 바뀌므로 constructor에서 고정함
         const randomIndex = Math.floor(Math.random() * Planet.images.length)
         this.image = Planet.images[randomIndex]
+
+        this.image.onload = () => {
+            this.draw()
+        }
+
     }
 
     // 행성 중심의 x좌표

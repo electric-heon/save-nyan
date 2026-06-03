@@ -107,6 +107,11 @@ class PoptartManager extends GameComponent {
 
             this.map.push(row)
         }
+
+        const img = Poptart.images[this.poptartSkin]
+        if (img instanceof HTMLImageElement && !img.complete) {
+            img.onload = () => this.draw()
+        }
     }
 
     draw() {
@@ -123,9 +128,6 @@ class PoptartManager extends GameComponent {
 
     // cat과 충돌 처리
     handleCollision(cat) {
-        if (cat.isWormhole) {
-            return false
-        }
         
         for (let i = 0; i < this.row; i++) {
             for (let j = 0; j < this.col; j++) {
@@ -133,10 +135,21 @@ class PoptartManager extends GameComponent {
                     continue
                 }
                 if (this.map[i][j].collidesWith(cat)) {         // 충돌 후 방향 전환
+                    if (Math.abs(cat.dx) <= cat.speed || Math.abs(cat.dy) <= cat.speed) {
+                        cat.isWormhole = false
+                    }
                     if (this.map[i][j].collisionAxis(cat) == 'x') {
-                        cat.dx *= -1
+                        if (!cat.isWormhole) {
+                            cat.dx *= -(cat.speed) / Math.abs(cat.dx)
+                        } else {
+                            cat.dx *= 0.5
+                        }
                     } else if (this.map[i][j].collisionAxis(cat) == 'y') {
-                        cat.dy *= -1
+                        if (!cat.isWormhole) {
+                            cat.dy *= -(cat.speed) / Math.abs(cat.dy)
+                        } else {
+                            cat.dy *= 0.5                                                        
+                        }
                     }
                     this.map[i][j].hitCount++                   // 충돌 횟수 증가
                     if (this.map[i][j].durability == this.map[i][j].hitCount) {   // 내구도 0 도달 시 팝 타르트 삭제
