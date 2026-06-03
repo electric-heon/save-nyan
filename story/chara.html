@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RPG Dialogue System</title>
+    <link rel="stylesheet" href="chara.css">
+</head>
+<body>
+    <div class="game-container">
+        <div class="scene-background"></div>
+        <div class="dialogue-box" id="dialogueBox">
+            <div class="portrait-container left-portrait">
+                <img src="" alt="Hero" id="heroPortrait" class="portrait-img inactive-portrait">
+            </div>
+            <div class="text-container">
+                <div id="charName" class="character-name"></div>
+                <div class="dialogue-text-wrapper">
+                    <div id="dialogueText" class="dialogue-text"></div>
+                </div>
+                <button class="next-button" id="nextBtn">▶</button>
+            </div>
+            <div class="portrait-container right-portrait">
+                <img src="" alt="Villain" id="villainPortrait" class="portrait-img inactive-portrait">
+                <img src="" alt="Girlfriend" id="girlfriendPortrait" class="portrait-img inactive-portrait">
+            </div>
+        </div>
+    </div>
+    <script src="chara.js"></script>
+</body>
+</html>

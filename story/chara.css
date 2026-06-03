@@ -1,0 +1,142 @@
+body {
+    margin: 0;
+    padding: 0;
+    background-color: #1a1a1a;
+    font-family: 'Courier New', Courier, monospace;
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    overflow: hidden;
+}
+
+.game-container {
+    width: 1024px;
+    height: 576px;
+    position: relative;
+    border: 4px solid #333;
+    background-color: black;
+    overflow: hidden;
+}
+
+.scene-background {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background-image: url('background.jpg');
+    background-size: cover;
+    background-position: center;
+    filter: brightness(0.7);
+    z-index: 1;
+}
+
+.dialogue-box {
+    position: absolute;
+    bottom: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 95%;
+    height: 180px;
+    background-color: rgba(0, 0, 10, 0.95);
+    border: 3px solid #b59410;
+    border-radius: 10px;
+    display: flex;
+    padding: 15px;
+    box-sizing: border-box;
+    z-index: 10;
+    opacity: 0;
+    transition: opacity 0.5s ease-in-out;
+}
+
+.dialogue-box.active {
+    opacity: 1;
+}
+
+.portrait-container {
+    width: 146px;
+    height: 146px;
+    border: 2px solid #666;
+    background-color: #000;
+    overflow: hidden;
+    flex-shrink: 0;
+    position: relative;
+}
+
+.left-portrait {
+    margin-right: 20px;
+}
+
+.right-portrait {
+    margin-left: 20px;
+}
+
+.portrait-img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: opacity 0.3s ease-in-out;
+}
+
+.active-portrait {
+    opacity: 1;
+}
+
+.inactive-portrait {
+    opacity: 0;
+}
+
+.text-container {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    position: relative;
+    height: 100%;
+    min-width: 0;
+}
+
+.character-name {
+    margin: 0 0 8px 0;
+    font-size: 1.4em;
+    color: #f1c40f;
+    text-shadow: 1px 1px 2px black;
+    font-weight: bold;
+}
+
+.dialogue-text-wrapper {
+    flex-grow: 1;
+    overflow: hidden;
+}
+
+.dialogue-text {
+    margin: 0;
+    font-size: 1.2em;
+    line-height: 1.5;
+    color: #ecf0f1;
+    word-break: keep-all;
+}
+
+.next-button {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    background: none;
+    border: none;
+    color: #b59410;
+    font-size: 1.8em;
+    cursor: pointer;
+    transition: transform 0.1s, color 0.2s;
+}
+
+.next-button:hover {
+    color: #f1c40f;
+    transform: scale(1.1);
+}
+
+.next-button:active {
+    transform: scale(0.95);
+}
