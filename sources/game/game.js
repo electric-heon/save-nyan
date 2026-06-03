@@ -58,14 +58,15 @@ window.addEventListener("load", () => {
 class Game extends GameComponent {
     constructor(catSkin, poptartSkin) {
         super()
-        this.catSkin
-        this.poptartSkin
+        this.catSkin = catSkin
+        this.poptartSkin = poptartSkin
         this.level = 1
         this.catSpeed = 5
         this.barSpeed = 15
         this.bar = new Bar(30, 250, 15, 100, this.barSpeed)
         this.cat = new NyanCat(80, 270, this.catSpeed, this.catSkin)
         this.popTartManager = new PoptartManager(5, 5, 10, this.level, this.poptartSkin)
+        this.planetManager = new PlanetManager(this.level, this.getPlanetForbiddenAreas())
         this.score = 0
         this.life = 3
         this.combo = 0
@@ -108,9 +109,10 @@ class Game extends GameComponent {
 
     // 게임 초기화
     reset() {
-        this.bar = new Bar(30, 250, 15, 100, 15)
+        this.bar = new Bar(30, 250, 15, 100, this.barSpeed)
         this.cat = new NyanCat(80, 270, this.catSpeed, this.catSkin)
         this.popTartManager = new PoptartManager(5, 5, 10, this.level, this.poptartSkin)
+        this.planetManager = new PlanetManager(this.level, this.getPlanetForbiddenAreas())
         this.score = 0
         this.life = 3
         this.combo = 0
@@ -118,7 +120,50 @@ class Game extends GameComponent {
         this.updateGameState()
 
         this.wormholeA = new Wormhole(150, Math.random() *100, 100, 100, 'A');
-        this.wormholeB = new Wormhole(850, Math.random() * (GameComponent.canvasHeight - 100), 100, 100, 'B');    }
+        this.wormholeB = new Wormhole(850, Math.random() * (GameComponent.canvasHeight - 100), 100, 100, 'B');
+    }
+
+    //행성 배치 금지구역
+    getPlanetForbiddenAreas() {
+        return [
+            { x: 40, y: 210, width: 160, height: 180, padding: 45 },
+            { x: 540, y: 20, width: 420, height: 560, padding: 15 },
+            { x: 120, y: 0, width: 160, height: 600, padding: 15 },
+            { x: 800, y: 0, width: 180, height: 600, padding: 15 },
+        ]
+    }
+
+    handleCatCrash() {
+        this.life--
+
+        if (this.life == 0) {
+            cancelAnimationFrame(this.requestID)
+            this.isPlaying = false
+            this.isStarted = false
+
+            const gameOverPopup = document.querySelector('.game_over')
+            const gaemOverScore = document.querySelector('#gameover_score')
+            const gameOverMaxCombo = document.querySelector('#gameover_maxcombo')
+
+            gameOverPopup.style.display = 'flex'
+            gaemOverScore.innerHTML = this.score
+            gameOverMaxCombo.innerHTML = this.maxCombo
+            return
+        }
+
+        cancelAnimationFrame(this.requestID)
+        this.isResetting = true
+        this.cat.erase()
+        this.bar.erase()
+        setTimeout(() => {
+            this.combo = 0
+            this.cat.reset()
+            this.bar.reset()
+            this.isPlaying = false
+            this.start()
+            this.isResetting = false
+        }, 1000)
+    }
 
     // 게임 중 esc 키 입력 시 일시정지 처리
     pause() {
@@ -156,6 +201,7 @@ class Game extends GameComponent {
         //----------------------------------------------------------------
         this.wormholeA.draw();
         this.wormholeB.draw();
+        this.planetManager.draw();
 
         let startWH = null;
         let targetWH = null;
@@ -200,8 +246,9 @@ class Game extends GameComponent {
             }
         }
 
-
-
+        if (this.planetManager.handleCollision(this.cat)) {
+            this.combo = 0
+        }
 
         if (this.popTartManager.isCleared()) {
             cancelAnimationFrame(this.requestID)
@@ -226,35 +273,9 @@ class Game extends GameComponent {
         }
         //왼쪽 벽 충돌 시
         if(!this.isResetting && this.cat.x < 0){
-            this.life--
+            this.handleCatCrash()
+            return
             // 수명 감소 후 남은 수명이 0이면
-            if (this.life == 0) {
-                
-                cancelAnimationFrame(this.requestID)
-                this.isPlaying = false
-                this.isStarted = false
-
-                const gameOverPopup = document.querySelector('.game_over')
-                const gaemOverScore = document.querySelector('#gameover_score')
-                const gameOverMaxCombo = document.querySelector('#gameover_maxcombo')
-
-                gameOverPopup.style.display = 'flex'
-                gaemOverScore.innerHTML = this.score
-                gameOverMaxCombo.innerHTML = this.maxCombo
-            } else {
-                cancelAnimationFrame(this.requestID)
-                this.isResetting = true
-                this.cat.erase()
-                this.bar.erase()
-                setTimeout(() => {
-                    this.combo = 0
-                    this.cat.reset()
-                    this.bar.reset()
-                    this.isPlaying = false
-                    this.start()
-                    this.isResetting = false
-                }, 1000)
-            }
         }
 
         // 고양이와 바 충돌시
@@ -292,6 +313,8 @@ class Game extends GameComponent {
         }
 
         if (!this.isResetting) {
+            // 행성 중력 적용 후 고양이 이동 및 출력
+            this.planetManager.applyGravity(this.cat, this._factor);
             this.cat.x += this.cat.dx * this._factor;
             this.cat.y += this.cat.dy * this._factor;
             this.cat.draw();
@@ -339,6 +362,7 @@ class Game extends GameComponent {
         GameComponent.context.clearRect(0, 0, GameComponent.canvasWidth, GameComponent.canvasHeight);
         this.updateGameState()
         this.bar.update(key);
+        this.planetManager.draw();
         this.popTartManager.draw();
         this.cat.draw()
     }
