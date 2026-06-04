@@ -76,7 +76,7 @@ class Game extends GameComponent {
         super()
         this.catSkin = catSkin
         this.poptartSkin = poptartSkin
-        this.level = 2
+        this.level = 3
         this.catSpeed = 5
         this.barSpeed = 15
         this.bar = new Bar(30, 250, 15, 100, this.barSpeed)
@@ -295,7 +295,7 @@ class Game extends GameComponent {
             this.combo = 0
         }
 
-        // 4. 팝타르트와 충돌 시
+        // 5. 팝타르트와 충돌 시
         if (this.popTartManager.handleCollision(this.cat)) {
             this.combo++
             this.score += this.combo * 7
@@ -334,6 +334,7 @@ class Game extends GameComponent {
         if (!this.isResetting) {
             // 행성 중력 적용 후 고양이 이동 및 출력
             this.planetManager.applyGravity(this.cat, this._factor);
+            this.cat.normalizeVelocity();
             this.cat.x += this.cat.dx * this._factor;
             this.cat.y += this.cat.dy * this._factor;
             this.cat.draw();

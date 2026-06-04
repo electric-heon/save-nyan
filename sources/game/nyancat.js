@@ -6,6 +6,7 @@ class NyanCat extends GameComponent {
         this.speed = speed
         this._dx = speed
         this._dy = Math.random() < 0.5 ? speed : -speed        
+        this.minimumComponentSpeed = speed * 0.35
         this._height = 40 
         this._width =  55 
         this.size = 1
@@ -36,6 +37,25 @@ class NyanCat extends GameComponent {
         this.size = size
         this._height = 40 * size
         this._width = 55 * size 
+    }
+
+    normalizeVelocity() {
+        const speed = Math.hypot(this._dx, this._dy)
+        if (speed <= 0) {
+            this._dx = this.speed
+            this._dy = this.speed
+            return
+        }
+
+        const minSpeed = Math.min(this.minimumComponentSpeed, speed / Math.SQRT2)
+        const minAngle = Math.asin(minSpeed / speed)
+        const quadrant = Math.floor((((Math.atan2(this._dy, this._dx) % (Math.PI * 2)) + Math.PI * 2) % (Math.PI * 2)) / (Math.PI / 2))
+        const quadrantStart = quadrant * Math.PI / 2
+        const localAngle = (((Math.atan2(this._dy, this._dx) - quadrantStart) % (Math.PI * 2)) + Math.PI * 2) % (Math.PI * 2)
+        const clampedAngle = quadrantStart + Math.max(minAngle, Math.min(Math.PI / 2 - minAngle, localAngle))
+
+        this._dx = Math.cos(clampedAngle) * speed
+        this._dy = Math.sin(clampedAngle) * speed
     }
 
     get x() {

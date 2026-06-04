@@ -140,13 +140,13 @@ class PoptartManager extends GameComponent {
                     }
                     if (this.map[i][j].collisionAxis(cat) == 'x') {
                         if (!cat.isWormhole) {
-                            cat.dx *= -(cat.speed) / Math.abs(cat.dx)
+                            cat.dx = -(Math.sign(cat.dx) || 1) * cat.speed
                         } else {
                             cat.dx *= 0.5
                         }
                     } else if (this.map[i][j].collisionAxis(cat) == 'y') {
                         if (!cat.isWormhole) {
-                            cat.dy *= -(cat.speed) / Math.abs(cat.dy)
+                            cat.dy = -(Math.sign(cat.dy) || 1) * cat.speed
                         } else {
                             cat.dy *= 0.5                                                        
                         }
