@@ -111,6 +111,8 @@
 .setting_music {
     display: flex;
     align-items: center;
+    text-align: center;
+    line-height: 44px;
     justify-content: center;
     background-color: rgba(0, 0, 0, 0);
     margin-right: 18px;

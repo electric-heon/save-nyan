@@ -1,5 +1,9 @@
 class Poptart extends GameComponent{
     static images = {}
+    static flavorImageMap = {
+        cherry: "images/poptart-1.png",
+        oreo: "images/poptart-2.png",
+    }
 
     constructor(x, y, width, height, flavor, durability) {
         super()
@@ -11,8 +15,12 @@ class Poptart extends GameComponent{
         this._durability = durability
         this._hitCount = 0
 
+        Poptart.loadImage(flavor)
+    }
+
+    static loadImage(flavor) {
         if (!Poptart.images[flavor]) {
-            const src =  "images/poptart-1.png"
+            const src = Poptart.flavorImageMap[flavor] || Poptart.flavorImageMap.cherry
             const img = new Image()
             Poptart.images[flavor] = img
             img.src = src
@@ -109,6 +117,24 @@ class PoptartManager extends GameComponent {
         }
 
         const img = Poptart.images[this.poptartSkin]
+        if (img instanceof HTMLImageElement && !img.complete) {
+            img.onload = () => this.draw()
+        }
+    }
+
+    setSkin(poptartSkin) {
+        this.poptartSkin = poptartSkin
+        Poptart.loadImage(poptartSkin)
+
+        for (let i = 0; i < this.row; i++) {
+            for (let j = 0; j < this.col; j++) {
+                if (this.map[i][j] != null) {
+                    this.map[i][j].flavor = poptartSkin
+                }
+            }
+        }
+
+        const img = Poptart.images[poptartSkin]
         if (img instanceof HTMLImageElement && !img.complete) {
             img.onload = () => this.draw()
         }

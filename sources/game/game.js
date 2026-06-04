@@ -111,6 +111,10 @@ class Game extends GameComponent {
             combo: document.querySelector("#combo"),
             level: document.querySelector("#level"),
         }
+
+        window.addEventListener("settingsChanged", (e) => {
+            this.applySettings(e.detail)
+        })
         
         // 스페이스바 입력 이벤트 발생 시 게임 플레이 시작
         window.addEventListener("keydown", (e) => {
@@ -121,6 +125,26 @@ class Game extends GameComponent {
                 }
             }
         })
+    }
+
+    applySettings(settings) {
+        if (!settings) {
+            return
+        }
+
+        if (settings.catSkin) {
+            this.catSkin = settings.catSkin
+            this.cat.setSkin(this.catSkin)
+        }
+
+        if (settings.poptartSkin) {
+            this.poptartSkin = settings.poptartSkin
+            this.popTartManager.setSkin(this.poptartSkin)
+        }
+
+        if (!this.isPlaying) {
+            this.start()
+        }
     }
 
     // 게임 초기화

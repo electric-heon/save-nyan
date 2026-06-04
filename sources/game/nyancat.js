@@ -1,4 +1,9 @@
 class NyanCat extends GameComponent {
+    static skinImageMap = {
+        cherry: "images/nyancat-1.png",
+        oreo: "images/nyancat-2.png",
+    }
+
     constructor(x, y, speed, skin) {
         super()
         this._x = x
@@ -12,10 +17,15 @@ class NyanCat extends GameComponent {
         this.size = 1
         
         this.catImage = new Image()
-        this.catImage.src =  "images/nyancat-1.png"
+        this.setSkin(skin)
+    }
+
+    setSkin(skin) {
+        this.skin = skin
         this.catImage.onload = () => {
             this.draw()
         }
+        this.catImage.src = NyanCat.skinImageMap[skin] || NyanCat.skinImageMap.cherry
     }
 
     reset() {
