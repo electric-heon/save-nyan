@@ -13,11 +13,25 @@ window.addEventListener("load", () => {
     retryBtn.addEventListener('click', () => {
         gameOverPopup.style.display = 'none'
         game.reset()
-        game.start()        
+        game.start()
     })
 
     quitBtn.addEventListener('click', () => {
         window.location.replace("main.html");
+    })
+
+    const nextStageBtn = document.querySelector('#next_stage')
+    const stageClearQuitBtn = document.querySelector('#stageclear_quit')
+    const stageClearPopup = document.querySelector('.stage_clear')
+
+    nextStageBtn.addEventListener('click', () => {
+        stageClearPopup.style.display = 'none'
+        game.levelUp()
+        game.start()
+    })
+
+    stageClearQuitBtn.addEventListener('click', () => {
+        window.location.replace("main.html")
     })
 
     const pauseMenu = document.querySelector(".menu")
@@ -200,8 +214,15 @@ class Game extends GameComponent {
         if (this.popTartManager.isCleared()) {
             cancelAnimationFrame(this.requestID)
             this.isPlaying = false
-            this.levelUp()
-            this.start()
+            this.isStarted = false
+
+            const stageClearPopup = document.querySelector('.stage_clear')
+            const stageClearScore = document.querySelector('#stageclear_score')
+            const stageClearMaxCombo = document.querySelector('#stageclear_maxcombo')
+
+            stageClearPopup.style.display = 'flex'
+            stageClearScore.innerHTML = this.score
+            stageClearMaxCombo.innerHTML = this.maxCombo
             return
         }  
         
