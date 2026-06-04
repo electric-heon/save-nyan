@@ -1,9 +1,9 @@
 class Planet extends GameComponent {
     // 사용할 행성 이미지 경로 배열
     static imagePath = [
-        "images/planet-1.svg",
-        "images/planet-2.svg",
-        "images/planet-3.svg",
+        "images/planet-1.png",
+        "images/planet-2.png",
+        "images/planet-3.png",
     ]
 
     // 이미지 객체들을 저장해두는 배열
@@ -26,13 +26,9 @@ class Planet extends GameComponent {
         // 이미지 전체 크기보다 조금 작게 잡음
         this.collisionRadius = size * 0.42
 
-        // 이미지가 아직 로딩되지 않았다면 한 번만 로딩
+            // 이미지가 아직 로딩되지 않았다면 한 번만 로딩
         if (Planet.images.length === 0) {
-            Planet.images = Planet.imagePath.map(path => {
-                const img = new Image()
-                img.src = path
-                return img
-            })
+            Planet.preload()
         }
 
         // 행성 생성 시 이미지 3개 중 하나를 랜덤으로 선택
@@ -40,10 +36,24 @@ class Planet extends GameComponent {
         const randomIndex = Math.floor(Math.random() * Planet.images.length)
         this.image = Planet.images[randomIndex]
 
-        this.image.onload = () => {
-            this.draw()
-        }
+        // this.image.onload = () => {
+        //     this.draw()
+        // }
 
+    }
+
+    static preload() {
+        if (Planet.images.length === 0) {
+            Planet.images = Planet.imagePath.map(path => {
+                const img = new Image()
+                img.src = path
+                return img
+            })
+        }
+        
+        return Promise.all(Planet.images.map(img =>
+            img.complete ? Promise.resolve() : new Promise(r => { img.onload = r; img.onerror = r })
+        ))
     }
 
     // 행성 중심의 x좌표
@@ -185,6 +195,8 @@ class Planet extends GameComponent {
         cat.dy = Math.sin(nextAngle) * speed
     }
 }
+
+
 
 class PlanetManager extends GameComponent {
     

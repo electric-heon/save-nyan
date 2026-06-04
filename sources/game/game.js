@@ -1,6 +1,8 @@
-window.addEventListener("load", () => {
+window.addEventListener("load", async () => {
 
     GameComponent.init()
+    await Planet.preload()
+
     const catSkin = localStorage.getItem("catSkin") || "cherry";
     const poptartSkin = localStorage.getItem("poptartSkin") || "cherry";
 	const game = new Game(catSkin, poptartSkin)
@@ -74,7 +76,7 @@ class Game extends GameComponent {
         super()
         this.catSkin = catSkin
         this.poptartSkin = poptartSkin
-        this.level = 1
+        this.level = 2
         this.catSpeed = 5
         this.barSpeed = 15
         this.bar = new Bar(30, 250, 15, 100, this.barSpeed)
