@@ -6,7 +6,7 @@ const characters = {
 
 const dialogueScript = [
     { character: characters.villain, text: "하하... 드디어 여기까지 왔군. 하지만 이미 늦었다.", portraitId: "villainPortrait" },
-    { character: characters.hero, text: "악당! 그녀는 어디 있나? 당장 그녀를 돌려줘!", portraitId: "heroPortrait" },
+    { character: characters.hero, text: "악당! 그녀는 어디 있지? 당장 그녀를 돌려줘!", portraitId: "heroPortrait" },
     { character: characters.villain, text: "돌려달라고? 어림도 없지. 나는 그녀를 내 시종으로 부릴것이다.", portraitId: "villainPortrait" },
     { character: characters.hero, text: "그만둬! 그녀를 이용하게 두지 않겠어!", portraitId: "heroPortrait" },
     { character: characters.girlfriend, text: "주인공...! 오지마! 이건 위험한 함정이야..!", portraitId: "girlfriendPortrait" },
@@ -26,13 +26,7 @@ function updateDialogue() {
         nameLabel.textContent = "";
         textBox.textContent = "== 대화 종료. 전투가 시작됩니다! ==";
         nextBtn.style.display = "none";
-
-        document.getElementById("heroPortrait").className = "portrait-img inactive-portrait";
-        document.getElementById("villainPortrait").className = "portrait-img inactive-portrait";
-        document.getElementById("girlfriendPortrait").className = "portrait-img inactive-portrait";
-
-        document.getElementById("stagePortraits").style.display = "none";
-
+        document.getElementById("dialogueBox").classList.remove("active");
         return;
     }
     
@@ -45,17 +39,23 @@ function updateDialogue() {
     const villainPortrait = document.getElementById("villainPortrait");
     const girlfriendPortrait = document.getElementById("girlfriendPortrait");
 
-    heroPortrait.className = "portrait-img inactive-portrait";
-    villainPortrait.className = "portrait-img inactive-portrait";
-    girlfriendPortrait.className = "portrait-img inactive-portrait";
-
     heroPortrait.src = characters.hero.portrait;
     villainPortrait.src = characters.villain.portrait;
     girlfriendPortrait.src = characters.girlfriend.portrait;
 
-    const activeCharacter = document.getElementById(line.portraitId);
-    if (activeCharacter) {
-        activeCharacter.className = activeCharacter.className.replace("inactive-portrait", "active-portrait");
+    if (currentLine === 7) { 
+        villainPortrait.classList.add("escape-right");
+        girlfriendPortrait.classList.add("escape-right");
+        heroPortrait.className = "portrait-img active-portrait chase-out-right";
+    } else {
+        heroPortrait.className = "portrait-img inactive-portrait";
+        villainPortrait.className = "portrait-img inactive-portrait";
+        girlfriendPortrait.className = "portrait-img inactive-portrait";
+
+        const activeCharacter = document.getElementById(line.portraitId);
+        if (activeCharacter) {
+            activeCharacter.className = activeCharacter.className.replace("inactive-portrait", "active-portrait");
+        }
     }
 
     currentLine++;
