@@ -12,7 +12,12 @@ const dialogueScript = [
     { character: characters.girlfriend, text: "주인공...! 오지마! 이건 위험한 함정이야..!", portraitId: "girlfriendPortrait" },
     { character: characters.hero, text: "여친! 기다려, 내가 지금 구하러 갈게!", portraitId: "heroPortrait" },
     { character: characters.villain, text: "크하하! 정말 눈물겹군. 그럼 어디 실력 발휘 좀 해보시지!", portraitId: "villainPortrait" },
-    { character: characters.hero, text: "거기서!!!", portraitId: "heroPortrait" }
+    { character: characters.hero, text: "거기서!!!", portraitId: "heroPortrait" },
+    { character: null, text: "", portraitId: "chaseAction" },
+    { character: characters.villain, text: "크윽 내가 따라잡히다니", portraitId: "villainPortrait" },
+    { character: null, text: "", portraitId: "villainVanished" },
+    { character: null, text: "", portraitId: "heroMeet" },
+    { character: { name: "", portrait: "" }, text: "그렇게 행복하게 살았습니다", portraitId: "" }
 ];
 
 let currentLine = 0;
@@ -23,8 +28,6 @@ function updateDialogue() {
     const nextBtn = document.getElementById("nextBtn");
 
     if (currentLine >= dialogueScript.length) {
-        nameLabel.textContent = "";
-        textBox.textContent = "== 대화 종료. 전투가 시작됩니다! ==";
         nextBtn.style.display = "none";
         document.getElementById("dialogueBox").classList.remove("active");
         return;
@@ -32,7 +35,11 @@ function updateDialogue() {
     
     const line = dialogueScript[currentLine];
 
-    nameLabel.textContent = line.character.name;
+    if (line.character) {
+        nameLabel.textContent = line.character.name;
+    } else {
+        nameLabel.textContent = "";
+    }
     textBox.textContent = line.text;
 
     const heroPortrait = document.getElementById("heroPortrait");
@@ -43,10 +50,39 @@ function updateDialogue() {
     villainPortrait.src = characters.villain.portrait;
     girlfriendPortrait.src = characters.girlfriend.portrait;
 
-    if (currentLine === 7) { 
-        villainPortrait.classList.add("escape-right");
-        girlfriendPortrait.classList.add("escape-right");
+    if (currentLine === 6) {
+        heroPortrait.className = "portrait-img inactive-portrait";
+        villainPortrait.className = "portrait-img active-portrait escape-right";
+        girlfriendPortrait.className = "portrait-img inactive-portrait escape-right";
+
+    } else if (currentLine === 7) { 
+        villainPortrait.className = "portrait-img escape-right";
+        girlfriendPortrait.className = "portrait-img escape-right";
+        heroPortrait.className = "portrait-img active-portrait";
+        
+    } else if (line.portraitId === "chaseAction") {
+        villainPortrait.className = "portrait-img escape-right";
+        girlfriendPortrait.className = "portrait-img escape-right";
         heroPortrait.className = "portrait-img active-portrait chase-out-right";
+        
+    } else if (currentLine === 9) {
+        heroPortrait.className = "portrait-img inactive-portrait";
+        villainPortrait.className = "portrait-img active-portrait";
+        girlfriendPortrait.className = "portrait-img inactive-portrait";
+        
+    } else if (line.portraitId === "villainVanished") {
+        villainPortrait.className = "portrait-img villain-vanished-instantly";
+        heroPortrait.className = "portrait-img inactive-portrait";
+        girlfriendPortrait.className = "portrait-img inactive-portrait";
+        
+    } else if (line.portraitId === "heroMeet" || currentLine === 12) {
+        if (currentLine === 12) {
+            nextBtn.style.display = "none";
+        }
+        villainPortrait.className = "portrait-img villain-vanished-instantly";
+        girlfriendPortrait.className = "portrait-img girlfriend-rescued-center";
+        heroPortrait.className = "portrait-img hero-meet-center";
+        
     } else {
         heroPortrait.className = "portrait-img inactive-portrait";
         villainPortrait.className = "portrait-img inactive-portrait";
