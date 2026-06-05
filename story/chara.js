@@ -1,40 +1,41 @@
 const characters = {
-    hero: { name: "주인공", portrait: "../images/nyancat-1.png" },
-    villain: { name: "악당", portrait: "../images/nyancat-2.svg" },
+    hero: { name: "주인공", portrait: "character1.jpg" },
+    villain: { name: "악당", portrait: "character2.jpg" },
     girlfriend: { name: "여친", portrait: "character3.jpg" }
 };
 
 const dialogueScript = [
-    { character: characters.villain, text: "흐흐흐... 드디어 여기까지 왔군, 애송이. 하지만 너무 늦었어.", portraitId: "villainPortrait" },
-    { character: characters.hero, text: "악당! 그녀는 어디 있나? 당장 그녀를 돌려받아야겠어!", portraitId: "heroPortrait" },
-    { character: characters.villain, text: "돌려달라고? 아니면... 저 쓸모없는 계집을 구하러 온 건가?", portraitId: "villainPortrait" },
-    { character: characters.hero, text: "닥쳐! 너의 비열한 계획에 그녀를 이용하게 두지 않겠다. 내 목숨을 걸고서라도 그녀를 찾을 것이다!", portraitId: "heroPortrait" },
-    { character: characters.girlfriend, text: "주인공...! 오지 마세요! 이건 함정이에요...!", portraitId: "girlfriendPortrait" },
-    { character: characters.hero, text: "여친! 기다려, 내가 지금 갈게!", portraitId: "heroPortrait" },
-    { character: characters.villain, text: "하하하! 감동적이군. 그럼 어디 실력 발휘 좀 해보시지!", portraitId: "villainPortrait" }
+    { character: characters.villain, text: "하하... 드디어 여기까지 왔군. 하지만 이미 늦었다.", portraitId: "villainPortrait" },
+    { character: characters.hero, text: "악당! 그녀는 어디 있나? 당장 그녀를 돌려줘!", portraitId: "heroPortrait" },
+    { character: characters.villain, text: "돌려달라고? 어림도 없지. 나는 그녀를 내 시종으로 부릴것이다.", portraitId: "villainPortrait" },
+    { character: characters.hero, text: "그만둬! 그녀를 이용하게 두지 않겠어!", portraitId: "heroPortrait" },
+    { character: characters.girlfriend, text: "주인공...! 오지마! 이건 위험한 함정이야..!", portraitId: "girlfriendPortrait" },
+    { character: characters.hero, text: "여친! 기다려, 내가 지금 구하러 갈게!", portraitId: "heroPortrait" },
+    { character: characters.villain, text: "크하하! 정말 눈물겹군. 그럼 어디 실력 발휘 좀 해보시지!", portraitId: "villainPortrait" },
+    { character: characters.hero, text: "거기서!!!", portraitId: "heroPortrait" }
 ];
 
 let currentLine = 0;
 
-const updateDialogue = () => {
+function updateDialogue() {
     const nameLabel = document.getElementById("charName");
     const textBox = document.getElementById("dialogueText");
     const nextBtn = document.getElementById("nextBtn");
 
     if (currentLine >= dialogueScript.length) {
         nameLabel.textContent = "";
-        textBox.textContent = "== 대화 종료. 전투가 시작됩니다! ==";    
+        textBox.textContent = "== 대화 종료. 전투가 시작됩니다! ==";
         nextBtn.style.display = "none";
 
         document.getElementById("heroPortrait").className = "portrait-img inactive-portrait";
         document.getElementById("villainPortrait").className = "portrait-img inactive-portrait";
         document.getElementById("girlfriendPortrait").className = "portrait-img inactive-portrait";
 
-        document.querySelector(".left-portrait").style.display = "none";
-        document.querySelector(".right-portrait").style.display = "none";
+        document.getElementById("stagePortraits").style.display = "none";
 
         return;
     }
+    
     const line = dialogueScript[currentLine];
 
     nameLabel.textContent = line.character.name;
@@ -52,13 +53,15 @@ const updateDialogue = () => {
     villainPortrait.src = characters.villain.portrait;
     girlfriendPortrait.src = characters.girlfriend.portrait;
 
-    const activePortrait = document.getElementById(line.portraitId);
-    activePortrait.className = "portrait-img active-portrait";
+    const activeCharacter = document.getElementById(line.portraitId);
+    if (activeCharacter) {
+        activeCharacter.className = activeCharacter.className.replace("inactive-portrait", "active-portrait");
+    }
 
     currentLine++;
 }
 
-const startScene = () => {
+function startScene() {
     document.getElementById("dialogueBox").classList.add("active");
     updateDialogue();
 }
@@ -68,7 +71,6 @@ document.getElementById("nextBtn").addEventListener("click", updateDialogue);
 window.addEventListener("keydown", (event) => {
     if (event.code === "Space") {
         event.preventDefault();
-
         if (document.getElementById("nextBtn").style.display !== "none") {
             updateDialogue();
         }
