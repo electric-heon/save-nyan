@@ -214,10 +214,14 @@ class Game extends GameComponent {
         
         // 스테이지 클리어 확인
         if (this.popTartManager.isCleared()) {
+            if(this.level == 3) {
+                this.finalClear();
+                return;
+            }
             cancelAnimationFrame(this.requestID)
             this.isPlaying = false
             this.isStarted = false
-
+            
             const stageClearPopup = document.querySelector('.stage_clear')
             const stageClearScore = document.querySelector('#stageclear_score')
             const stageClearMaxCombo = document.querySelector('#stageclear_maxcombo')
@@ -389,5 +393,44 @@ class Game extends GameComponent {
         this.wormholeA.draw()
         this.wormholeB.draw()
         this.cat.draw()
+    }
+
+    finalClear() {
+        const targetX = 150;
+    const targetY = GameComponent.canvasHeight / 2;
+
+    // 화면 초기화 및 배경 그리기
+    GameComponent.context.clearRect(0, 0, GameComponent.canvasWidth, GameComponent.canvasHeight);
+    this.planetManager.draw();
+
+    // 1. 거리 계산
+    const diffX = targetX - this.cat.x;
+    const diffY = targetY - this.cat.y;
+    const distance = Math.sqrt(diffX * diffX + diffY * diffY);
+
+    // 목표 지점에 도착했고, 크기도 충분히 커졌다면 '오른쪽 대쉬' 모드로 전환
+    if (distance <= 1 && this.size >= 3) {
+        this.isEndingDash = true; 
+    }
+
+    if (!this.isEndingDash) {
+        // --- Phase 1: 중앙으로 이동하며 커지기 ---
+        if (distance > 1) {
+            this.cat.x += diffX * 0.1;
+            this.cat.y += diffY * 0.1;
+        }
+        if (this.size < 3) {
+            this.size += 0.02;
+            this.cat.resize(this.size);
+        }
+    } else {
+        // --- Phase 2: 오른쪽으로 쭉 이동하기 ---
+        this.cat.dx = 15; // 대쉬 속도
+        this.cat.x += this.cat.dx;
+        
+    }
+
+    // 고양이 그리기
+    this.cat.draw();
     }
 }
