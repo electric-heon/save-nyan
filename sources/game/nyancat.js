@@ -1,4 +1,9 @@
 class NyanCat extends GameComponent {
+    static skinImageMap = {
+        cherry: "images/nyancat-1.png",
+        oreo: "images/nyancat-2.png",
+    }
+
     constructor(x, y, speed, skin) {
         super()
         this._x = x
@@ -6,15 +11,21 @@ class NyanCat extends GameComponent {
         this.speed = speed
         this._dx = speed
         this._dy = Math.random() < 0.5 ? speed : -speed        
+        this.minimumComponentSpeed = speed * 0.35
         this._height = 40 
         this._width =  55 
         this.size = 1
         
         this.catImage = new Image()
-        this.catImage.src =  "images/nyancat-1.png"
+        this.setSkin(skin)
+    }
+
+    setSkin(skin) {
+        this.skin = skin
         this.catImage.onload = () => {
             this.draw()
         }
+        this.catImage.src = NyanCat.skinImageMap[skin] || NyanCat.skinImageMap.cherry
     }
 
     reset() {
@@ -36,6 +47,25 @@ class NyanCat extends GameComponent {
         this.size = size
         this._height = 40 * size
         this._width = 55 * size 
+    }
+
+    normalizeVelocity() {
+        const speed = Math.hypot(this._dx, this._dy)
+        if (speed <= 0) {
+            this._dx = this.speed
+            this._dy = this.speed
+            return
+        }
+
+        const minSpeed = Math.min(this.minimumComponentSpeed, speed / Math.SQRT2)
+        const minAngle = Math.asin(minSpeed / speed)
+        const quadrant = Math.floor((((Math.atan2(this._dy, this._dx) % (Math.PI * 2)) + Math.PI * 2) % (Math.PI * 2)) / (Math.PI / 2))
+        const quadrantStart = quadrant * Math.PI / 2
+        const localAngle = (((Math.atan2(this._dy, this._dx) - quadrantStart) % (Math.PI * 2)) + Math.PI * 2) % (Math.PI * 2)
+        const clampedAngle = quadrantStart + Math.max(minAngle, Math.min(Math.PI / 2 - minAngle, localAngle))
+
+        this._dx = Math.cos(clampedAngle) * speed
+        this._dy = Math.sin(clampedAngle) * speed
     }
 
     get x() {

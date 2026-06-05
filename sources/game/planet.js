@@ -205,16 +205,16 @@ class PlanetManager extends GameComponent {
         this.planets = []
         this.forbiddenAreas = forbiddenAreas
 
-        // stage 1: 0개, stage 2: 1개, stage 3 이상: 2개
-        const planetCount = level === 1 ? 0 : level === 2 ? 1 : 2
+        //레벨만큼 행성 생성(최대개수 3개) 
+        const planetCounts = Math.min(3, level)
 
-        this.createPlanets(planetCount)
+        this.createPlanets(planetCounts)
     }
 
     createPlanets(count) {
         // 행성 기본 설정값
-        const size = 64
-        const gravityRadius = 260
+        const sizeArr = [36, 44, 52]
+        const gravityRadius = 240
         const turnStrength = 0.05
 
         // 행성이 생성될 수 있는 후보 영역들
@@ -229,15 +229,39 @@ class PlanetManager extends GameComponent {
         for (let i = 0; i < count; i++) {
             // 후보 영역을 순서대로 반복해서 사용
             const area = areas[i % areas.length]
+            
+            // size 값 3개 중 랜덤으로 사용
+            const randIdx = Math.floor(Math.random() * sizeArr.length)
+            const size = sizeArr[randIdx]
 
             // 해당 영역 안에서 행성 하나 생성 시도
-            const planet = this.createPlanetInArea(area, size, gravityRadius, turnStrength)
+            const planet = this.createPlanetInAreas(areas, area, size, gravityRadius, turnStrength)
 
             // 유효한 위치에 생성되었을 때만 배열에 추가
             if (planet) {
                 this.planets.push(planet)
             }
         }
+    }
+
+    createPlanetInAreas(areas, preferredArea, size, gravityRadius, turnStrength) {
+        let planet = this.createPlanetInArea(preferredArea, size, gravityRadius, turnStrength)
+        if (planet) {
+            return planet
+        }
+
+        for (const area of areas) {
+            if (area === preferredArea) {
+                continue
+            }
+
+            planet = this.createPlanetInArea(area, size, gravityRadius, turnStrength)
+            if (planet) {
+                return planet
+            }
+        }
+
+        return null
     }
 
     createPlanetInArea(area, size, gravityRadius, turnStrength) {
@@ -264,11 +288,12 @@ class PlanetManager extends GameComponent {
 
     isValidPosition(planet) {
         // 이미 생성된 다른 행성과 너무 가까운지 검사
+        const minPlanetGap = 100
         for (const other of this.planets) {
             const distance = Math.hypot(planet.centerX - other.centerX, planet.centerY - other.centerY)
 
             // 행성끼리 너무 가까우면 배치 불가
-            if (distance < planet.size + other.size + 40) {
+            if (distance < planet.size / 2 + other.size / 2 + minPlanetGap) {
                 return false
             }
         }
