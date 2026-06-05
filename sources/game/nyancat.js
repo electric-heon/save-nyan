@@ -1,7 +1,7 @@
 class NyanCat extends GameComponent {
     static skinImageMap = {
         cherry: "images/nyancat-1.png",
-        oreo: "images/nyancat-2.png",
+        oreo: "images/nyancat-3.png",
     }
 
     constructor(x, y, speed, skin) {
@@ -36,7 +36,16 @@ class NyanCat extends GameComponent {
     }
 
     draw() {
-        GameComponent.context.drawImage(this.catImage, this._x, this._y, this._width, this._height);
+        const ctx = GameComponent.context;
+        if (this._dx < 0) {
+            ctx.save();
+            ctx.translate(this._x + this._width, this._y);
+            ctx.scale(-1, 1);
+            ctx.drawImage(this.catImage, 0, 0, this._width, this._height);
+            ctx.restore();
+        } else {
+            ctx.drawImage(this.catImage, this._x, this._y, this._width, this._height);
+        }
     }
 
     erase() {

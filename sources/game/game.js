@@ -2,10 +2,14 @@ window.addEventListener("load", async () => {
 
     GameComponent.init()
     await Planet.preload()
+    await Poptart.preload()
 
     const catSkin = localStorage.getItem("catSkin") || "cherry";
-    const poptartSkin = localStorage.getItem("poptartSkin") || "cherry";
-	const game = new Game(catSkin, poptartSkin)
+
+    let poptartSkin = localStorage.getItem("poptartSkin") || "cherry"
+    
+
+    const game = new Game(catSkin, poptartSkin)
     game.start()
 
     const retryBtn = document.querySelector('#retry')
@@ -76,7 +80,7 @@ class Game extends GameComponent {
         super()
         this.catSkin = catSkin
         this.poptartSkin = poptartSkin
-        this.level = 3
+        this.level = 1
         this.catSpeed = 5
         this.barSpeed = 15
         this.bar = new Bar(30, 250, 15, 100, this.barSpeed)
@@ -102,8 +106,8 @@ class Game extends GameComponent {
         this.lastTimestamp = null
 
         // 웜홀 객체 초기화
-        this.wormholeA = new Wormhole(150, Math.random() * (GameComponent.canvasHeight - 100), 100, 100, 'A');
-        this.wormholeB = new Wormhole(400, Math.random() * (GameComponent.canvasHeight - 100), 100, 100, 'B');
+        this.wormholeA = new Wormhole(150, Math.random() * (GameComponent.canvasHeight - 100), 60, 60, 'entrance');
+        this.wormholeB = new Wormhole(400, Math.random() * (GameComponent.canvasHeight - 100), 60, 60, 'exit');
 
         this.ui = {
             life: document.querySelector("#life"),
@@ -159,8 +163,8 @@ class Game extends GameComponent {
         this.size = 1
         this.updateGameState()
 
-        this.wormholeA = new Wormhole(150, Math.random() *100, 100, 100, 'A');
-        this.wormholeB = new Wormhole(400, Math.random() * (GameComponent.canvasHeight - 100), 100, 100, 'B');
+        this.wormholeA = new Wormhole(150, Math.random() * (GameComponent.canvasHeight - 100), 60, 60, 'entrance');
+        this.wormholeB = new Wormhole(400, Math.random() * (GameComponent.canvasHeight - 100), 60, 60, 'exit');
     }
 
     //행성 배치 금지구역
@@ -299,7 +303,7 @@ class Game extends GameComponent {
                 this.cat.dy = (this.cat.dy > 0 ? 1 : -1) * this.catSpeed;
             } else {
                 this.cat.dx *= -1;
-            }
+            }   
         }
 
                 

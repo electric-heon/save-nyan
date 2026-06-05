@@ -1,4 +1,9 @@
 ﻿class Wormhole extends GameComponent {
+    static images = {
+        entrance: "images/wormhole_entrance.png",
+        exit: "images/wormhole_exit.png"
+    }
+
     constructor(x, y, width, height, id){
         super();
         this.x = x;
@@ -9,7 +14,7 @@
         
         this.isActive = true; // 스테이지 시작 시 활성화
         this.image = new Image();
-        this.image.src = "images/wormhole.png"; // 웜홀 이미지 경로
+        this.image.src = Wormhole.images[id]; // 웜홀 이미지 경로
 
         this.image.onload = () => {
             this.draw()
