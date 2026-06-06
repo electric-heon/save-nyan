@@ -2,7 +2,8 @@ class Settings extends HTMLElement {
     constructor() {
         super()
 
-        this.musicList = ["Nyan", "Space", "Retro"]
+        this.musicList = ["game_bgm1", "game_bgm2", "game_bgm3", "game_bgm4"]
+
         this.selectedCat = localStorage.getItem("catSkin") || "cherry"
         this.selectedPoptart = localStorage.getItem("poptartSkin") || "cherry"
         this.selectedMusic = localStorage.getItem("music") || this.musicList[0]
@@ -123,8 +124,13 @@ class Settings extends HTMLElement {
                 catSkin: this.selectedCat,
                 poptartSkin: this.selectedPoptart,
                 music: this.selectedMusic,
+                musicFile: this.getMusicFile(),
             },
         }))
+    }
+
+    getMusicFile(musicName = this.selectedMusic) {
+        return `bgm/${musicName}.mp3`
     }
 
     changeMusic(direction) {

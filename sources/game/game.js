@@ -104,6 +104,14 @@ class Game extends GameComponent {
         this.isResetting = false
 
         this.lastTimestamp = null
+        this.music = localStorage.getItem("music") || "game_bgm1"
+        this.bgm = new Audio(this.getBgmSource(this.music))
+        this.bgm.loop = true
+        this.bgm.volume = 0.45
+        this.lifeDownSound = new Audio("bgm/minus_life.mp3")
+        this.deathSound = new Audio("bgm/death_sound.mp3")
+        this.lifeDownSound.volume = 0.7
+        this.deathSound.volume = 0.8
 
         // 웜홀 객체 초기화
         this.wormholeA = new Wormhole(150, Math.random() * (GameComponent.canvasHeight - 100), 60, 60, 'entrance');
@@ -146,9 +154,80 @@ class Game extends GameComponent {
             this.popTartManager.setSkin(this.poptartSkin)
         }
 
+        if (settings.music) {
+            this.setBgm(settings.music, this.isPlaying)
+        }
+
         if (!this.isPlaying) {
             this.start()
         }
+    }
+
+    getBgmSource(musicName) {
+        return `bgm/${musicName}.mp3`
+    }
+
+    setBgm(musicName, shouldPlay = false) {
+        if (this.music === musicName) {
+            return
+        }
+
+        this.stopBgm()
+        this.music = musicName
+        this.bgm = new Audio(this.getBgmSource(this.music))
+        this.bgm.loop = true
+        this.bgm.volume = 0.45
+
+        if (shouldPlay) {
+            this.playBgm()
+        }
+    }
+
+    playBgm(ignoreResetting = false) {
+        if (!this.bgm || !this.isStarted || (!ignoreResetting && this.isResetting)) {
+            return
+        }
+
+        this.bgm.play().catch(() => {})
+    }
+
+    pauseBgm() {
+        if (this.bgm) {
+            this.bgm.pause()
+        }
+    }
+
+    stopBgm() {
+        if (this.bgm) {
+            this.bgm.pause()
+            this.bgm.currentTime = 0
+        }
+    }
+
+    playSound(sound, pauseGameBgm = false, resumeGameBgm = false) {
+        if (!sound) {
+            return
+        }
+
+        if (pauseGameBgm) {
+            this.pauseBgm()
+        }
+
+        sound.onended = () => {
+            sound.onended = null
+
+            if (resumeGameBgm && this.isStarted && this.life > 0) {
+                this.playBgm(true)
+            }
+        }
+        sound.currentTime = 0
+        sound.play().catch(() => {
+            sound.onended = null
+
+            if (resumeGameBgm && this.isStarted && this.life > 0) {
+                this.playBgm(true)
+            }
+        })
     }
 
     // 게임 초기화
@@ -186,6 +265,8 @@ class Game extends GameComponent {
             cancelAnimationFrame(this.requestID)
             this.isPlaying = false
             this.isStarted = false
+            this.stopBgm()
+            this.playSound(this.deathSound, true, false)
 
             const gameOverPopup = document.querySelector('.game_over')
             const gaemOverScore = document.querySelector('#gameover_score')
@@ -199,6 +280,7 @@ class Game extends GameComponent {
 
         cancelAnimationFrame(this.requestID)
         this.isResetting = true
+        this.playSound(this.lifeDownSound, true, true)
         this.cat.erase()
         this.bar.erase()
         setTimeout(() => {
@@ -216,6 +298,7 @@ class Game extends GameComponent {
         cancelAnimationFrame(this.requestID)
         this.isPlaying = false
         this.lastTimestamp = null
+        this.pauseBgm()
     }
 
     // 레벨 증가 시 난이도 조절
@@ -394,12 +477,16 @@ class Game extends GameComponent {
             return
         }
 
+        const wasPlaying = this.isPlaying
         if (this.lastTimestamp === null) this.lastTimestamp = timestamp
         // deltaTime을 50ms로 제한해 탭 전환 후 복귀 시 폭발적 이동 방지
         const deltaTime = Math.min(timestamp - this.lastTimestamp, 50)
         this.lastTimestamp = timestamp
         this._factor = deltaTime / (1000 / 60)
         this.isPlaying = true;
+        if (!wasPlaying) {
+            this.playBgm()
+        }
 
         GameComponent.context.clearRect(0, 0, GameComponent.canvasWidth, GameComponent.canvasHeight);
         if (!this.isResetting) {

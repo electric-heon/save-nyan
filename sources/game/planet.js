@@ -213,8 +213,8 @@ class PlanetManager extends GameComponent {
 
     createPlanets(count) {
         // 행성 기본 설정값
-        const sizeArr = [36, 44, 52]
-        const gravityRadius = 240
+        const sizeArr = [36, 41, 46]
+        const gravityRadius = 210
         const turnStrength = 0.05
 
         // 행성이 생성될 수 있는 후보 영역들
@@ -288,7 +288,7 @@ class PlanetManager extends GameComponent {
 
     isValidPosition(planet) {
         // 이미 생성된 다른 행성과 너무 가까운지 검사
-        const minPlanetGap = 100
+        const minPlanetGap = 130
         for (const other of this.planets) {
             const distance = Math.hypot(planet.centerX - other.centerX, planet.centerY - other.centerY)
 
