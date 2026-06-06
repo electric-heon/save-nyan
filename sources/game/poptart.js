@@ -108,6 +108,7 @@ class PoptartManager extends GameComponent {
         this.startX = GameComponent.canvasWidth/2 + 40
         this.startY = 57.5
         this.map = [];
+        this.lastCollisionWasWormhole = false
         
         this.poptartSkin = []
 
@@ -214,7 +215,51 @@ class PoptartManager extends GameComponent {
 
 
     // cat과 충돌 처리
+    resolveOverlap(cat) {
+        for (let pass = 0; pass < 4; pass++) {
+            let moved = false
+
+            for (let i = 0; i < this.row; i++) {
+                for (let j = 0; j < this.col; j++) {
+                    const poptart = this.map[i][j]
+                    if (poptart == null || !poptart.collidesWith(cat)) {
+                        continue
+                    }
+
+                    const overlapX = Math.min(cat.x + cat.width, poptart.x + poptart.width) - Math.max(cat.x, poptart.x)
+                    const overlapY = Math.min(cat.y + cat.height, poptart.y + poptart.height) - Math.max(cat.y, poptart.y)
+
+                    if (overlapX <= 0 || overlapY <= 0) {
+                        continue
+                    }
+
+                    if (overlapX < overlapY) {
+                        if (cat.x + cat.width / 2 < poptart.x + poptart.width / 2) {
+                            cat.x = poptart.x - cat.width
+                        } else {
+                            cat.x = poptart.x + poptart.width
+                        }
+                    } else {
+                        if (cat.y + cat.height / 2 < poptart.y + poptart.height / 2) {
+                            cat.y = poptart.y - cat.height
+                        } else {
+                            cat.y = poptart.y + poptart.height
+                        }
+                    }
+
+                    moved = true
+                }
+            }
+
+            if (!moved) {
+                return
+            }
+        }
+    }
+
     handleCollision(cat) {
+        this.lastCollisionWasWormhole = false
+
         if (cat.poptartHitCooldown > 0 && !cat.isWormhole) {
             cat.poptartHitCooldown--
             return false
@@ -226,38 +271,39 @@ class PoptartManager extends GameComponent {
                     continue
                 }
                 if (this.map[i][j].collidesWith(cat)) {         // 충돌 후 방향 전환
-                    if (Math.abs(cat.dx)*0.5 < cat.speed || Math.abs(cat.dy)*0.5 < cat.speed) {
-                        cat.isWormhole = false
-                    }
-                    const axis = this.map[i][j].collisionAxis(cat)
-                    if (axis == 'x') {
-                        if (!cat.isWormhole) {
+                    const wasWormhole = cat.isWormhole
+                    this.lastCollisionWasWormhole = wasWormhole
+
+                    if (wasWormhole) {
+                        cat.dx *= 0.5
+                        cat.dy *= 0.5
+
+                        if (Math.hypot(cat.dx, cat.dy) < cat.speed) {
+                            cat.isWormhole = false
+                        }
+                    } else {
+                        const axis = this.map[i][j].collisionAxis(cat)
+                        if (axis == 'x') {
                             if (cat.dx > 0) {
                                 cat.x = this.map[i][j].x - cat.width
                             } else {
                                 cat.x = this.map[i][j].x + this.map[i][j].width
                             }
                             cat.dx = -(Math.sign(cat.dx) || 1) * cat.speed
-                        } else {
-                            cat.dx *= 0.5
-                        }
-                    } else if (axis == 'y') {
-                        if (!cat.isWormhole) {
+                        } else if (axis == 'y') {
                             if (cat.dy > 0) {
                                 cat.y = this.map[i][j].y - cat.height
                             } else {
                                 cat.y = this.map[i][j].y + this.map[i][j].height
                             }
                             cat.dy = -(Math.sign(cat.dy) || 1) * cat.speed
-                        } else {
-                            cat.dy *= 0.5
                         }
                     }
                     this.map[i][j].hitCount++                                       // 충돌 횟수 증가
-                    if (this.map[i][j].durability == this.map[i][j].hitCount || cat.isWormhole) {     // 내구도 0 도달 또는 웜홀 돌진 상태일 때 팝타르트 삭제
+                    if (this.map[i][j].durability == this.map[i][j].hitCount || wasWormhole) {     // 내구도 0 도달 또는 웜홀 돌진 상태일 때 팝타르트 삭제
                         this.map[i][j].erase()
                         this.map[i][j] = null
-                        if (!cat.isWormhole) cat.poptartHitCooldown = 3
+                        if (!wasWormhole) cat.poptartHitCooldown = 3
                         return true;
                     } else {
                         this.map[i][j].transparency += 0.4

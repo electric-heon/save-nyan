@@ -55,9 +55,13 @@ class NyanCat extends GameComponent {
     }
 
     resize(size) {
+        const centerX = this._x + this._width / 2
+        const centerY = this._y + this._height / 2
         this.size = size
         this._height = 40 * size
         this._width = 55 * size 
+        this._x = centerX - this._width / 2
+        this._y = centerY - this._height / 2
     }
 
     normalizeVelocity() {

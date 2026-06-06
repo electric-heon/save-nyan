@@ -376,7 +376,7 @@ class Game extends GameComponent {
             const diffY = targetWH.y - this.cat.y;
             const angle = Math.atan2(diffY, diffX);
             
-            const rushSpeed = this.catSpeed * 3; // 3배 속도
+            const rushSpeed = this.catSpeed * 4; // 4배 속도
             this.cat.dx = Math.cos(angle) * rushSpeed;
             this.cat.dy = Math.sin(angle) * rushSpeed;
 
@@ -435,6 +435,9 @@ class Game extends GameComponent {
             if (this.size < 1.5) {
                 this.size += this.sizeStep
                 this.cat.resize(this.size)
+                if (!this.popTartManager.lastCollisionWasWormhole) {
+                    this.popTartManager.resolveOverlap(this.cat)
+                }
             }
         }
 
