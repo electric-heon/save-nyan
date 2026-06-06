@@ -12,10 +12,11 @@ class NyanCat extends GameComponent {
         this._dx = speed
         this._dy = Math.random() < 0.5 ? speed : -speed        
         this.minimumComponentSpeed = speed * 0.35
-        this._height = 40 
-        this._width =  55 
+        this._height = 40
+        this._width =  55
         this.size = 1
-        
+        this.poptartHitCooldown = 0
+
         this.catImage = new Image()
         this.setSkin(skin)
     }
@@ -33,6 +34,7 @@ class NyanCat extends GameComponent {
         this.y = 300 - this.width/2 + 10
         this._dx = this.speed
         this._dy = Math.random() < 0.5 ? this.speed : -this.speed
+        this.poptartHitCooldown = 0
     }
 
     draw() {

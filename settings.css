@@ -118,6 +118,10 @@
     margin-right: 18px;
 }
 
+.music_title {
+    font-family: "Press Start 2P";
+}
+
 .left {
     display: block;
     height: 52px;

@@ -3,6 +3,7 @@ window.addEventListener("load", async () => {
     GameComponent.init()
     await Planet.preload()
     await Poptart.preload()
+    await Wormhole.preload()
 
     const catSkin = localStorage.getItem("catSkin") || "cherry";
 
@@ -10,6 +11,10 @@ window.addEventListener("load", async () => {
     
 
     const game = new Game(catSkin, poptartSkin)
+    if (localStorage.getItem('pendingLevelUp')) {
+        localStorage.removeItem('pendingLevelUp')
+        game.levelUp()
+    }
     game.start()
 
     const retryBtn = document.querySelector('#retry')
@@ -32,8 +37,9 @@ window.addEventListener("load", async () => {
 
     nextStageBtn.addEventListener('click', () => {
         stageClearPopup.style.display = 'none'
-        game.levelUp()
-        game.start()
+        localStorage.setItem('pendingLevelUp', 'true')
+        localStorage.setItem('charaLevel', String(game.level))
+        window.location.replace('chara.html')
     })
 
     stageClearQuitBtn.addEventListener('click', () => {
@@ -84,9 +90,15 @@ class Game extends GameComponent {
         this.catSpeed = 5
         this.barSpeed = 15
         this.bar = new Bar(30, 250, 15, 100, this.barSpeed)
-        this.cat = new NyanCat(80, 270, this.catSpeed, this.catSkin)
+
+        // 웜홀 객체 초기화
+        this.wormholeA = new Wormhole(60, 60, 'entrance');
+        this.wormholeB = new Wormhole(60, 60, 'exit');
+
+        this.cat = new NyanCat(80, 282, this.catSpeed, this.catSkin)
         this.popTartManager = new PoptartManager(5, 5, 10, this.level, this.poptartSkin)
         this.planetManager = new PlanetManager(this.level, this.getPlanetForbiddenAreas())
+
         this.score = 0
         this.life = 3
         this.combo = 0
@@ -113,9 +125,6 @@ class Game extends GameComponent {
         this.lifeDownSound.volume = 0.7
         this.deathSound.volume = 0.8
 
-        // 웜홀 객체 초기화
-        this.wormholeA = new Wormhole(150, Math.random() * (GameComponent.canvasHeight - 100), 60, 60, 'entrance');
-        this.wormholeB = new Wormhole(400, Math.random() * (GameComponent.canvasHeight - 100), 60, 60, 'exit');
 
         this.ui = {
             life: document.querySelector("#life"),
@@ -230,10 +239,10 @@ class Game extends GameComponent {
         })
     }
 
-    // 게임 초기화
+    // 게임 초기화(게임오버)
     reset() {
         this.bar = new Bar(30, 250, 15, 100, this.barSpeed)
-        this.cat = new NyanCat(80, 270, this.catSpeed, this.catSkin)
+        this.cat = new NyanCat(80, 282, this.catSpeed, this.catSkin)
         this.popTartManager = new PoptartManager(5, 5, 10, this.level, this.poptartSkin)
         this.planetManager = new PlanetManager(this.level, this.getPlanetForbiddenAreas())
         this.score = 0
@@ -241,9 +250,8 @@ class Game extends GameComponent {
         this.combo = 0
         this.size = 1
         this.updateGameState()
-
-        this.wormholeA = new Wormhole(150, Math.random() * (GameComponent.canvasHeight - 100), 60, 60, 'entrance');
-        this.wormholeB = new Wormhole(400, Math.random() * (GameComponent.canvasHeight - 100), 60, 60, 'exit');
+        this.wormholeA.reset()
+        this.wormholeB.reset()
     }
 
     //행성 배치 금지구역
@@ -314,6 +322,14 @@ class Game extends GameComponent {
                 this.catSpeed = 7
                 this.barSpeed = 24
                 break
+            case 4:
+                this.catSpeed = 8
+                this.barSpeed = 28
+                break
+            case 5:
+                this.catSpeed = 9
+                this.barSpeed = 32
+                break
         }
 
         this.reset()
@@ -325,7 +341,7 @@ class Game extends GameComponent {
         
         // 스테이지 클리어 확인
         if (this.popTartManager.isCleared()) {
-            if(this.level == 3) {
+            if(this.level == 5) {
                 this.finalClear();
                 return;
             }
@@ -360,7 +376,7 @@ class Game extends GameComponent {
             const diffY = targetWH.y - this.cat.y;
             const angle = Math.atan2(diffY, diffX);
             
-            const rushSpeed = this.catSpeed * 4; // 4배 속도
+            const rushSpeed = this.catSpeed * 3; // 3배 속도
             this.cat.dx = Math.cos(angle) * rushSpeed;
             this.cat.dy = Math.sin(angle) * rushSpeed;
 
@@ -379,14 +395,14 @@ class Game extends GameComponent {
         if (this.cat.x + this.cat.width > GameComponent.canvasWidth) {
             
             this.cat.x = GameComponent.canvasWidth - this.cat.width;
-            
-            if (this.cat.isWormhole) {
-                this.cat.isWormhole = false; // 돌진 해제
-                this.cat.dx = -this.catSpeed; // 원래 속도로 반사
-                this.cat.dy = (this.cat.dy > 0 ? 1 : -1) * this.catSpeed;
-            } else {
-                this.cat.dx *= -1;
-            }   
+            this.cat.dx *= -1;
+            // if (this.cat.isWormhole) {
+            //     this.cat.isWormhole = false; // 돌진 해제
+            //     this.cat.dx = -this.catSpeed; // 원래 속도로 반사
+            //     this.cat.dy *= this.catSkin/Math.abs(this.cat.dy);
+            // } else {
+            //     this.cat.dx *= -1;
+            // }   
         }
 
                 
@@ -452,9 +468,9 @@ class Game extends GameComponent {
             this.cat.normalizeVelocity();
             this.cat.x += this.cat.dx * this._factor;
             this.cat.y += this.cat.dy * this._factor;
-            this.cat.draw();
             this.wormholeA.draw();
             this.wormholeB.draw();
+            this.cat.draw();
             this.planetManager.draw();
         }
     }
@@ -504,49 +520,56 @@ class Game extends GameComponent {
         GameComponent.context.clearRect(0, 0, GameComponent.canvasWidth, GameComponent.canvasHeight);
         this.updateGameState()
         this.bar.update(key);
-        this.planetManager.draw();
-        this.popTartManager.draw();
         this.wormholeA.draw()
         this.wormholeB.draw()
+        this.planetManager.draw();
+        this.popTartManager.draw();
         this.cat.draw()
     }
 
     finalClear() {
         const targetX = 150;
-    const targetY = GameComponent.canvasHeight / 2;
+        const targetY = GameComponent.canvasHeight / 2;
 
-    // 화면 초기화 및 배경 그리기
-    GameComponent.context.clearRect(0, 0, GameComponent.canvasWidth, GameComponent.canvasHeight);
-    this.planetManager.draw();
+        // 화면 초기화 및 배경 그리기
+        GameComponent.context.clearRect(0, 0, GameComponent.canvasWidth, GameComponent.canvasHeight);
+        this.planetManager.draw();
 
-    // 1. 거리 계산
-    const diffX = targetX - this.cat.x;
-    const diffY = targetY - this.cat.y;
-    const distance = Math.sqrt(diffX * diffX + diffY * diffY);
+        // 1. 거리 계산
+        const diffX = targetX - this.cat.x;
+        const diffY = targetY - this.cat.y;
+        const distance = Math.sqrt(diffX * diffX + diffY * diffY);
 
-    // 목표 지점에 도착했고, 크기도 충분히 커졌다면 '오른쪽 대쉬' 모드로 전환
-    if (distance <= 1 && this.size >= 3) {
-        this.isEndingDash = true; 
-    }
-
-    if (!this.isEndingDash) {
-        // --- Phase 1: 중앙으로 이동하며 커지기 ---
-        if (distance > 1) {
-            this.cat.x += diffX * 0.1;
-            this.cat.y += diffY * 0.1;
+        // 목표 지점에 도착했고, 크기도 충분히 커졌다면 '오른쪽 대쉬' 모드로 전환
+        if (distance <= 1 && this.size >= 3) {
+            this.isEndingDash = true; 
         }
-        if (this.size < 3) {
-            this.size += 0.02;
-            this.cat.resize(this.size);
-        }
-    } else {
-        // --- Phase 2: 오른쪽으로 쭉 이동하기 ---
-        this.cat.dx = 15; // 대쉬 속도
-        this.cat.x += this.cat.dx;
-        
-    }
 
-    // 고양이 그리기
-    this.cat.draw();
+        if (!this.isEndingDash) {
+            // --- Phase 1: 중앙으로 이동하며 커지기 ---
+            if (distance > 1) {
+                this.cat.x += diffX * 0.1;
+                this.cat.y += diffY * 0.1;
+            }
+            if (this.size < 3) {
+                this.size += 0.02;
+                this.cat.resize(this.size);
+            }
+        } else {
+            // --- Phase 2: 오른쪽으로 쭉 이동하기 ---
+            this.cat.dx = 15; // 대쉬 속도
+            this.cat.x += this.cat.dx;
+
+            if (this.cat.x > GameComponent.canvasWidth + 50) {
+                cancelAnimationFrame(this.requestID);
+                this.stopBgm();
+                localStorage.setItem('charaLevel', '5');
+                window.location.replace('chara.html');
+                return;
+            }
+        }
+
+        // 고양이 그리기
+        this.cat.draw();
     }
 }

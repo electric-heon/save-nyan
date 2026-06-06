@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RPG Dialogue System</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="chara.css">
+</head>
+<body>
+    <div class="game-container">
+        <div class="scene-background"></div>
+        <div class="stage-portraits" id="stagePortraits">
+            <div class="left-group">
+                <img src=""  id="heroPortrait" class="portrait-img inactive-portrait">
+            </div>
+            <div class="right-group">
+                <img src=""  id="villainPortrait" class="portrait-img inactive-portrait">
+                <img src=""  id="girlfriendPortrait" class="portrait-img inactive-portrait">
+            </div>
+        </div>
+        <div class="dialogue-box" id="dialogueBox">
+            <div class="text-container">
+                <div id="charName" class="character-name"></div>
+                <div class="dialogue-text-wrapper">
+                    <div id="dialogueText" class="dialogue-text"></div>
+                </div>
+                <button class="next-button" id="nextBtn">▶</button>
+            </div>
+        </div>
+    </div>
+    <script src="sources/chara.js"></script>
+</body>
+</html>

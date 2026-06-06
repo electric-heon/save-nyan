@@ -54,7 +54,7 @@ class Poptart extends GameComponent{
     }
 
     set durability(durability) {
-        this._durability = this.durability
+        this._durability = durability
     }
 
     draw() {
@@ -215,6 +215,10 @@ class PoptartManager extends GameComponent {
 
     // cat과 충돌 처리
     handleCollision(cat) {
+        if (cat.poptartHitCooldown > 0 && !cat.isWormhole) {
+            cat.poptartHitCooldown--
+            return false
+        }
 
         outer: for (let i = 0; i < this.row; i++) {
             for (let j = 0; j < this.col; j++) {
@@ -222,7 +226,7 @@ class PoptartManager extends GameComponent {
                     continue
                 }
                 if (this.map[i][j].collidesWith(cat)) {         // 충돌 후 방향 전환
-                    if (Math.abs(cat.dx) <= cat.speed || Math.abs(cat.dy) <= cat.speed) {
+                    if (Math.abs(cat.dx)*0.5 < cat.speed || Math.abs(cat.dy)*0.5 < cat.speed) {
                         cat.isWormhole = false
                     }
                     const axis = this.map[i][j].collisionAxis(cat)
@@ -250,13 +254,14 @@ class PoptartManager extends GameComponent {
                         }
                     }
                     this.map[i][j].hitCount++                                       // 충돌 횟수 증가
-                    if (this.map[i][j].durability == this.map[i][j].hitCount) {     // 내구도 0 도달 시 팝 타르트 삭제
+                    if (this.map[i][j].durability == this.map[i][j].hitCount || cat.isWormhole) {     // 내구도 0 도달 또는 웜홀 돌진 상태일 때 팝타르트 삭제
                         this.map[i][j].erase()
                         this.map[i][j] = null
-
+                        if (!cat.isWormhole) cat.poptartHitCooldown = 3
                         return true;
                     } else {
                         this.map[i][j].transparency += 0.4
+                        cat.poptartHitCooldown = 3
                         break outer
                     }
                 }

@@ -1,25 +1,45 @@
 ﻿class Wormhole extends GameComponent {
-    static images = {
+    static imagePaths = {
         entrance: "images/wormhole_entrance.png",
         exit: "images/wormhole_exit.png"
     }
 
-    constructor(x, y, width, height, id){
+    static images = {}
+
+    static preload() {
+        return Promise.all(Object.entries(Wormhole.imagePaths).map(([id, path]) => {
+            if (Wormhole.images[id]) return Promise.resolve()
+            const img = new Image()
+            img.src = path
+            Wormhole.images[id] = img
+            return img.complete ? Promise.resolve() : new Promise(r => { img.onload = r; img.onerror = r })
+        }))
+    }
+
+    static cordX = {
+        entrance: 150,
+        exit: 400
+    }
+
+    constructor(width, height, id){
         super();
-        this.x = x;
-        this.y = y;
+
+        
         this.width = width;
         this.height = height;
         this.id = id;
         
+        this.x = Wormhole.cordX[id];
+        this.y = Math.random() * (GameComponent.canvasHeight - 100);
+        
         this.isActive = true; // 스테이지 시작 시 활성화
-        this.image = new Image();
-        this.image.src = Wormhole.images[id]; // 웜홀 이미지 경로
+        this.image = Wormhole.images[id];
 
-        this.image.onload = () => {
-            this.draw()
-        }
+    }
 
+    reset() {
+        this.y = Math.random() * (GameComponent.canvasHeight - 100);
+        this.isActive = true; // 게임오버 시 활성화
     }
 
     draw() {
