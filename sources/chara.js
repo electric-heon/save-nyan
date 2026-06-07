@@ -1,7 +1,7 @@
 const characters = {
-    hero: { name: "Nyan Cat", portrait: "images/nyancat-1.png" },
-    villain: { name: "Dark Choco Cat", portrait: "images/nyancat-2.png" },
-    girlfriend: { name: "Cream Cat", portrait: "images/nyancat-3.png" }
+    hero: { name: "Nyan Cat", portrait: "assets/images/nyancat-1.png" },
+    villain: { name: "Dark Choco Cat", portrait: "assets/images/nyancat-2.png" },
+    girlfriend: { name: "Cream Cat", portrait: "assets/images/nyancat-3.png" }
 };
 
 // key 0 = 게임 시작 인트로, key 1~4 = 스테이지 클리어 후 다음 스테이지 진입 전, key 5 = 엔딩
@@ -119,7 +119,7 @@ const updateDialogue = () => {
         heroPortrait.className = "portrait-img hero-meet-center";
         nextBtn.style.display = "none";
         setTimeout(() => {
-            window.location.replace('ending.html');
+            window.location.replace('main.html');
         }, 2000);
     } else {
         heroPortrait.className = "portrait-img inactive-portrait";

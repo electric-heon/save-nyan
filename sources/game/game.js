@@ -1,6 +1,8 @@
 window.addEventListener("load", async () => {
 
     GameComponent.init()
+
+    // 이미지 미리 로드
     await Planet.preload()
     await Poptart.preload()
     await Wormhole.preload()
@@ -86,7 +88,7 @@ class Game extends GameComponent {
         super()
         this.catSkin = catSkin
         this.poptartSkin = poptartSkin
-        this.level = parseInt(localStorage.getItem('charaLevel') || '1')
+        this.level = Math.max(1, parseInt(localStorage.getItem('charaLevel') || '1'))
         this.catSpeed = 5
         this.barSpeed = 15
         this.bar = new Bar(30, 250, 15, 100, this.barSpeed)
@@ -120,8 +122,8 @@ class Game extends GameComponent {
         this.bgm = new Audio(this.getBgmSource(this.music))
         this.bgm.loop = true
         this.bgm.volume = 0.45
-        this.lifeDownSound = new Audio("bgm/minus_life.mp3")
-        this.deathSound = new Audio("bgm/death_sound.mp3")
+        this.lifeDownSound = new Audio("assets/bgm/minus_life.mp3")
+        this.deathSound = new Audio("assets/bgm/death_sound.mp3")
         this.lifeDownSound.volume = 0.7
         this.deathSound.volume = 0.8
 
@@ -173,7 +175,7 @@ class Game extends GameComponent {
     }
 
     getBgmSource(musicName) {
-        return `bgm/${musicName}.mp3`
+        return `assets/bgm/${musicName}.mp3`
     }
 
     setBgm(musicName, shouldPlay = false) {
@@ -312,6 +314,7 @@ class Game extends GameComponent {
     // 레벨 증가 시 난이도 조절
     levelUp() {
         this.level++
+        localStorage.setItem('charaLevel', String(this.level))
 
         switch(this.level) {
             case 2:
@@ -357,8 +360,13 @@ class Game extends GameComponent {
             stageClearScore.innerHTML = this.score
             stageClearMaxCombo.innerHTML = this.maxCombo
             return
-        }  
+        }
         
+        
+
+        //-----------------------------------------
+        // 웜홀 기능 구현
+        //-----------------------------------------
         let startWH = null;
         let targetWH = null;
 

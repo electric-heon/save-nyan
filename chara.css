@@ -21,8 +21,8 @@ body {
 }
 
 .game-container {
-    width: 1024px;
-    height: 576px;
+    width: 1000px;
+    height: 600px;
     position: relative;
     border: 4px solid grey;
     background-color: #211a59;

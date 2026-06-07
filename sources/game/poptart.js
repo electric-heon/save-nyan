@@ -1,12 +1,12 @@
 class Poptart extends GameComponent{
     static images = {}
     static flavorImageMap = {
-        cherry: "images/poptart-1.png",
-        blueberry: "images/poptart-3.png",
-        fudge: "images/poptart-6.png",
-        oreo: "images/poptart-2.png",
-        sprinkle: "images/poptart-5.png",
-        choco: "images/poptart-4.png"
+        cherry: "assets/images/poptart-1.png",
+        blueberry: "assets/images/poptart-3.png",
+        fudge: "assets/images/poptart-6.png",
+        oreo: "assets/images/poptart-2.png",
+        sprinkle: "assets/images/poptart-5.png",
+        choco: "assets/images/poptart-4.png"
     }
 
     constructor(x, y, width, height, flavor, durability) {
@@ -68,32 +68,6 @@ class Poptart extends GameComponent{
         GameComponent.context.clearRect(this.x, this.y, this.width, this.height)
     }
 
-    collidesWith(cat) {
-        return  cat.x < this.x + this.width &&
-                cat.x + cat.width > this.x &&
-                cat.y < this.y + this.height &&
-                cat.y + cat.height > this.y
-    }
-
-    collisionAxis(cat) {
-        const catLeft   = cat.x;
-        const catRight  = cat.x + cat.width ;
-        const catTop    = cat.y;
-        const catBottom = cat.y + cat.height;
-
-        const popLeft   = this.x;
-        const popRight  = this.x + this.width;
-        const popTop    = this.y;
-        const popBottom = this.y + this.height;
-
-        const overlapX = Math.min(catRight, popRight) - Math.max(catLeft, popLeft);
-        const overlapY = Math.min(catBottom, popBottom) - Math.max(catTop, popTop);
-
-        // 한 축이라도 안 겹치면 충돌 아님
-        if (overlapX <= 0 || overlapY <= 0) return null;
-
-        return overlapX < overlapY ? "x" : "y";
-    }
 }
 
 class PoptartManager extends GameComponent {
@@ -214,7 +188,7 @@ class PoptartManager extends GameComponent {
     }
 
 
-    // cat과 충돌 처리
+    // cat과 충돌 후 겹침 발생 시 위치 보정
     resolveOverlap(cat) {
         for (let pass = 0; pass < 4; pass++) {
             let moved = false
@@ -275,11 +249,19 @@ class PoptartManager extends GameComponent {
                     this.lastCollisionWasWormhole = wasWormhole
 
                     if (wasWormhole) {
-                        cat.dx *= 0.5
-                        cat.dy *= 0.5
+                        const currentSpeed = Math.hypot(cat.dx, cat.dy)
 
-                        if (Math.hypot(cat.dx, cat.dy) < cat.speed) {
+                        // 0.5배로 줄였을 때 기존 속도 아래로 내려가면
+                        // 기존 속도 밑으로 떨어졌다 다시 빨라지지 않도록
+                        // 정확히 기존 속도로 맞추고 돌진 상태 해제
+                        if (currentSpeed * 0.5 <= cat.speed) {
+                            const scale = currentSpeed > 0 ? cat.speed / currentSpeed : 1
+                            cat.dx *= scale
+                            cat.dy *= scale
                             cat.isWormhole = false
+                        } else {
+                            cat.dx *= 0.5
+                            cat.dy *= 0.5
                         }
                     } else {
                         const axis = this.map[i][j].collisionAxis(cat)

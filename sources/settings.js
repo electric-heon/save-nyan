@@ -130,7 +130,7 @@ class Settings extends HTMLElement {
     }
 
     getMusicFile(musicName = this.selectedMusic) {
-        return `bgm/${musicName}.mp3`
+        return `/assets/bgm/${musicName}.mp3`
     }
 
     changeMusic(direction) {

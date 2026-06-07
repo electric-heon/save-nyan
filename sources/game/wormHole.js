@@ -1,7 +1,7 @@
 ﻿class Wormhole extends GameComponent {
     static imagePaths = {
-        entrance: "images/wormhole_entrance.png",
-        exit: "images/wormhole_exit.png"
+        entrance: "assets/images/wormhole_entrance.png",
+        exit: "assets/images/wormhole_exit.png"
     }
 
     static images = {}

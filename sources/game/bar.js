@@ -50,35 +50,6 @@ class Bar extends GameComponent {
         GameComponent.context.clearRect(this.x, this.y, this.width, this.height);
     }
 
-    // cat과 충돌 여부 반환
-    collidesWith(cat) {
-        return  cat.x < this.x + this.width &&
-                cat.x + cat.width > this.x &&
-                cat.y < this.y + this.height &&
-                cat.y + cat.height > this.y        
-    }
-
-    // cat과 충돌한 방향 반환
-    collisionAxis(cat) {
-        const catLeft   = cat.x;
-        const catRight  = cat.x + cat.width ;
-        const catTop    = cat.y;
-        const catBottom = cat.y + cat.height;
-
-        const barLeft   = this.x;
-        const barRight  = this.x + this.width;
-        const barTop    = this.y;
-        const barBottom = this.y + this.height;
-
-        const overlapX = Math.min(catRight, barRight) - Math.max(catLeft, barLeft);
-        const overlapY = Math.min(catBottom, barBottom) - Math.max(catTop, barTop);
-
-        // 한 축이라도 안 겹치면 충돌 아님
-        if (overlapX <= 0 || overlapY <= 0) return null;
-
-        return overlapX < overlapY ? "x" : "y";
-    }
-
     reset() {
         this.x = 30
         this.y = 250

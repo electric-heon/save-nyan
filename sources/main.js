@@ -1,7 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
     const settingPopup = document.querySelector(".setting_popup")
     const settingBtn = document.querySelector(".setting")
-    const mainBgm = new Audio("bgm/Nyan Nyan Cat - Poptart Cat.mp3")
+    const mainBgm = new Audio("assets/bgm/Nyan Nyan Cat - Poptart Cat.mp3")
     mainBgm.loop = true
     mainBgm.volume = 0.45
 

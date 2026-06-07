@@ -1,9 +1,9 @@
 class Planet extends GameComponent {
     // 사용할 행성 이미지 경로 배열
     static imagePath = [
-        "images/planet-1.png",
-        "images/planet-2.png",
-        "images/planet-3.png",
+        "assets/images/planet-1.png",
+        "assets/images/planet-2.png",
+        "assets/images/planet-3.png",
     ]
 
     // 이미지 객체들을 저장해두는 배열
