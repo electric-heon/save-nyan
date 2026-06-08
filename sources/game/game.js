@@ -88,7 +88,7 @@ class Game extends GameComponent {
         super()
         this.catSkin = catSkin
         this.poptartSkin = poptartSkin
-        this.level = Math.max(1, parseInt(localStorage.getItem('charaLevel') || '1'))
+        this.level = Math.max(3, parseInt(localStorage.getItem('charaLevel') || '1'))
         this.catSpeed = 5
         this.barSpeed = 15
         this.bar = new Bar(30, 250, 15, 100, this.barSpeed)

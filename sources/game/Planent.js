@@ -211,31 +211,23 @@ class PlanetManager extends GameComponent {
         this.createPlanets(planetCounts)
     }
 
+    // 행성이 놓일 수 있는 합법 영역(좌우 벽/금지구역을 피한 중앙 띠)
+    // x: 300 ~ 520, y: 40 ~ 560 범위는 모든 금지구역 밖이라 행성 간 거리만 확인하면 됨
+    static bounds = { minX: 300, maxX: 520, minY: 40, maxY: 560 }
+
     createPlanets(count) {
         // 행성 기본 설정값
         const sizeArr = [36, 41, 46]
         const gravityRadius = 210
         const turnStrength = 0.05
 
-        // 행성이 생성될 수 있는 후보 영역들
-        const areas = [
-            { x: 230, y: 90, width: 160, height: 200 },
-            { x: 390, y: 300, width: 160, height: 200 },
-            { x: 230, y: 320, width: 160, height: 160 },
-            { x: 400, y: 95, width: 140, height: 185 },
-        ]
-
         // 필요한 개수만큼 행성 생성
         for (let i = 0; i < count; i++) {
-            // 후보 영역을 순서대로 반복해서 사용
-            const area = areas[i % areas.length]
-            
             // size 값 3개 중 랜덤으로 사용
-            const randIdx = Math.floor(Math.random() * sizeArr.length)
-            const size = sizeArr[randIdx]
+            const size = sizeArr[Math.floor(Math.random() * sizeArr.length)]
 
-            // 해당 영역 안에서 행성 하나 생성 시도
-            const planet = this.createPlanetInAreas(areas, area, size, gravityRadius, turnStrength)
+            // 합법 영역 안에서 행성 하나 생성 시도
+            const planet = this.createPlanet(size, gravityRadius, turnStrength)
 
             // 유효한 위치에 생성되었을 때만 배열에 추가
             if (planet) {
@@ -244,56 +236,44 @@ class PlanetManager extends GameComponent {
         }
     }
 
-    createPlanetInAreas(areas, preferredArea, size, gravityRadius, turnStrength) {
-        let planet = this.createPlanetInArea(preferredArea, size, gravityRadius, turnStrength)
-        if (planet) {
-            return planet
-        }
+    createPlanet(size, gravityRadius, turnStrength) {
+        const { minX, maxX, minY, maxY } = PlanetManager.bounds
 
-        for (const area of areas) {
-            if (area === preferredArea) {
-                continue
-            }
+        // 행성 스프라이트 전체가 영역 안에 들어오도록 우/하단은 size만큼 당김
+        const spanX = Math.max(1, maxX - size - minX)
+        const spanY = Math.max(1, maxY - size - minY)
 
-            planet = this.createPlanetInArea(area, size, gravityRadius, turnStrength)
-            if (planet) {
-                return planet
-            }
-        }
-
-        return null
-    }
-
-    createPlanetInArea(area, size, gravityRadius, turnStrength) {
         // 위치를 찾기 위한 최대 시도 횟수
-        const maxAttempts = 80
+        const maxAttempts = 120
 
         for (let i = 0; i < maxAttempts; i++) {
-            // area 안에서 행성의 x, y 좌표를 랜덤으로 정함
-            const x = area.x + Math.random() * Math.max(1, area.width - size)
-            const y = area.y + Math.random() * Math.max(1, area.height - size)
+            const x = minX + Math.random() * spanX
+            const y = minY + Math.random() * spanY
 
-            // 랜덤 위치에 행성 생성
-            const planet = new Planet(x, y, size, gravityRadius, turnStrength)
-
-            // 다른 행성이나 금지 구역과 겹치지 않으면 반환
-            if (this.isValidPosition(planet)) {
-                return planet
+            // 다른 행성/금지구역과 겹치지 않을 때만 실제 객체를 만들어 반환
+            // (객체 생성을 검증 통과 후로 미뤄 불필요한 Planet 생성을 피함)
+            if (this.isValidPosition(x, y, size)) {
+                return new Planet(x, y, size, gravityRadius, turnStrength)
             }
         }
 
-        // 80번 시도해도 적절한 위치를 못 찾으면 null 반환
+        // 끝까지 적절한 위치를 못 찾으면 null 반환
         return null
     }
 
-    isValidPosition(planet) {
+    isValidPosition(x, y, size) {
+        // 행성 중심 좌표
+        const centerX = x + size / 2
+        const centerY = y + size / 2
+
         // 이미 생성된 다른 행성과 너무 가까운지 검사
-        const minPlanetGap = 130
+        // 합법 띠가 좁아 3개를 모두 배치하려면 간격을 너무 크게 잡으면 안 됨
+        const minPlanetGap = 100
         for (const other of this.planets) {
-            const distance = Math.hypot(planet.centerX - other.centerX, planet.centerY - other.centerY)
+            const distance = Math.hypot(centerX - other.centerX, centerY - other.centerY)
 
             // 행성끼리 너무 가까우면 배치 불가
-            if (distance < planet.size / 2 + other.size / 2 + minPlanetGap) {
+            if (distance < size / 2 + other.size / 2 + minPlanetGap) {
                 return false
             }
         }
@@ -301,14 +281,14 @@ class PlanetManager extends GameComponent {
         // 금지 구역과 겹치는지 검사
         for (const area of this.forbiddenAreas) {
             // 사각형 영역 안에서 행성 중심과 가장 가까운 점 계산
-            const nearestX = Math.max(area.x, Math.min(planet.centerX, area.x + area.width))
-            const nearestY = Math.max(area.y, Math.min(planet.centerY, area.y + area.height))
+            const nearestX = Math.max(area.x, Math.min(centerX, area.x + area.width))
+            const nearestY = Math.max(area.y, Math.min(centerY, area.y + area.height))
 
             // 행성 중심과 금지 구역의 가장 가까운 점 사이 거리
-            const distance = Math.hypot(planet.centerX - nearestX, planet.centerY - nearestY)
+            const distance = Math.hypot(centerX - nearestX, centerY - nearestY)
 
             // 행성과 금지 구역이 너무 가까우면 배치 불가
-            if (distance < planet.size / 2 + area.padding) {
+            if (distance < size / 2 + area.padding) {
                 return false
             }
         }
