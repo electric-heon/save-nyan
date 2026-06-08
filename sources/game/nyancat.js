@@ -11,6 +11,8 @@ class NyanCat extends GameComponent {
         this.speed = speed
         this.dx = speed
         this.dy = Math.random() < 0.5 ? speed : -speed
+        this.prevX = x
+        this.prevY = y
         this.minimumComponentSpeed = speed * 0.35
         this.height = 40
         this.width = 55
@@ -32,9 +34,16 @@ class NyanCat extends GameComponent {
     reset() {
         this.x = 80
         this.y = 300 - this.width/2 + 10
+        this.prevX = this.x
+        this.prevY = this.y
         this.dx = this.speed
         this.dy = Math.random() < 0.5 ? this.speed : -this.speed
         this.poptartHitCooldown = 0
+    }
+
+    rememberPosition() {
+        this.prevX = this.x
+        this.prevY = this.y
     }
 
     draw() {

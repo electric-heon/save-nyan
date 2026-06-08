@@ -232,6 +232,73 @@ class PoptartManager extends GameComponent {
         }
     }
 
+    getCollisionSide(poptart, cat) {
+        const prevX = Number.isFinite(cat.prevX) ? cat.prevX : cat.x - cat.dx
+        const prevY = Number.isFinite(cat.prevY) ? cat.prevY : cat.y - cat.dy
+        const moveX = cat.x - prevX
+        const moveY = cat.y - prevY
+
+        const prevLeft = prevX
+        const prevRight = prevX + cat.width
+        const prevTop = prevY
+        const prevBottom = prevY + cat.height
+
+        let xSide = null
+        let ySide = null
+        let xEntry = -Infinity
+        let yEntry = -Infinity
+
+        if (moveX > 0 && prevRight <= poptart.x) {
+            xSide = 'left'
+            xEntry = (poptart.x - prevRight) / moveX
+        } else if (moveX < 0 && prevLeft >= poptart.x + poptart.width) {
+            xSide = 'right'
+            xEntry = (poptart.x + poptart.width - prevLeft) / moveX
+        }
+
+        if (moveY > 0 && prevBottom <= poptart.y) {
+            ySide = 'top'
+            yEntry = (poptart.y - prevBottom) / moveY
+        } else if (moveY < 0 && prevTop >= poptart.y + poptart.height) {
+            ySide = 'bottom'
+            yEntry = (poptart.y + poptart.height - prevTop) / moveY
+        }
+
+        if (xSide && ySide) {
+            return xEntry > yEntry ? xSide : ySide
+        }
+
+        if (xSide) return xSide
+        if (ySide) return ySide
+
+        const overlapX = Math.min(cat.x + cat.width, poptart.x + poptart.width) - Math.max(cat.x, poptart.x)
+        const overlapY = Math.min(cat.y + cat.height, poptart.y + poptart.height) - Math.max(cat.y, poptart.y)
+
+        if (overlapX < overlapY) {
+            return cat.dx >= 0 ? 'left' : 'right'
+        }
+
+        return cat.dy >= 0 ? 'top' : 'bottom'
+    }
+
+    bounceFromPoptart(poptart, cat) {
+        const side = this.getCollisionSide(poptart, cat)
+
+        if (side == 'left') {
+            cat.x = poptart.x - cat.width
+            cat.dx = -Math.abs(cat.speed)
+        } else if (side == 'right') {
+            cat.x = poptart.x + poptart.width
+            cat.dx = Math.abs(cat.speed)
+        } else if (side == 'top') {
+            cat.y = poptart.y - cat.height
+            cat.dy = -Math.abs(cat.speed)
+        } else if (side == 'bottom') {
+            cat.y = poptart.y + poptart.height
+            cat.dy = Math.abs(cat.speed)
+        }
+    }
+
     handleCollision(cat) {
         this.lastCollisionWasWormhole = false
 
@@ -266,22 +333,7 @@ class PoptartManager extends GameComponent {
                             cat.dy *= 0.5
                         }
                     } else {
-                        const axis = this.map[i][j].collisionAxis(cat)
-                        if (axis == 'x') {
-                            if (cat.dx > 0) {
-                                cat.x = this.map[i][j].x - cat.width
-                            } else {
-                                cat.x = this.map[i][j].x + this.map[i][j].width
-                            }
-                            cat.dx = -(Math.sign(cat.dx) || 1) * cat.speed
-                        } else if (axis == 'y') {
-                            if (cat.dy > 0) {
-                                cat.y = this.map[i][j].y - cat.height
-                            } else {
-                                cat.y = this.map[i][j].y + this.map[i][j].height
-                            }
-                            cat.dy = -(Math.sign(cat.dy) || 1) * cat.speed
-                        }
+                        this.bounceFromPoptart(this.map[i][j], cat)
                     }
                     this.map[i][j].hitCount++                                       // 충돌 횟수 증가
                     if (this.map[i][j].durability == this.map[i][j].hitCount || wasWormhole) {     // 내구도 0 도달 또는 웜홀 돌진 상태일 때 팝타르트 삭제

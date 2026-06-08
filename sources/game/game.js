@@ -468,6 +468,7 @@ class Game extends GameComponent {
             // 행성 중력 적용 후 고양이 이동 및 출력
             this.planetManager.applyGravity(this.cat, this._factor);
             this.cat.normalizeVelocity();
+            this.cat.rememberPosition();
             this.cat.x += this.cat.dx * this._factor;
             this.cat.y += this.cat.dy * this._factor;
             this.wormholeA.draw();
