@@ -173,9 +173,15 @@ class PoptartManager extends GameComponent {
 
 
     // cat과 충돌 후 겹침 발생 시 위치 보정
+    // 한 패스마다 "가장 깊게 낀 블록 하나"만 최소 거리로 밀어내고
+    // 밀어낸 축의 속도를 격자 바깥 방향으로 정렬해 재충돌을 막는다.
+    // (여러 블록을 한 패스에서 동시에 보정하면 cat 위치가 덮어써지며 순간이동이 발생함)
     resolveOverlap(cat) {
         for (let pass = 0; pass < 4; pass++) {
-            let moved = false
+            let target = null
+            let targetOverlapX = 0
+            let targetOverlapY = 0
+            let maxDepth = 0
 
             for (let i = 0; i < this.row; i++) {
                 for (let j = 0; j < this.col; j++) {
@@ -191,26 +197,37 @@ class PoptartManager extends GameComponent {
                         continue
                     }
 
-                    if (overlapX < overlapY) {
-                        if (cat.x + cat.width / 2 < poptart.x + poptart.width / 2) {
-                            cat.x = poptart.x - cat.width
-                        } else {
-                            cat.x = poptart.x + poptart.width
-                        }
-                    } else {
-                        if (cat.y + cat.height / 2 < poptart.y + poptart.height / 2) {
-                            cat.y = poptart.y - cat.height
-                        } else {
-                            cat.y = poptart.y + poptart.height
-                        }
+                    // 최소 침투축 깊이가 가장 큰 블록을 우선 보정
+                    const depth = Math.min(overlapX, overlapY)
+                    if (depth > maxDepth) {
+                        maxDepth = depth
+                        target = poptart
+                        targetOverlapX = overlapX
+                        targetOverlapY = overlapY
                     }
-
-                    moved = true
                 }
             }
 
-            if (!moved) {
+            if (target == null) {
                 return
+            }
+
+            if (targetOverlapX < targetOverlapY) {
+                if (cat.x + cat.width / 2 < target.x + target.width / 2) {
+                    cat.x = target.x - cat.width
+                    if (cat.dx > 0) cat.dx = -cat.dx     // 격자 바깥(왼쪽) 방향으로 속도 정렬
+                } else {
+                    cat.x = target.x + target.width
+                    if (cat.dx < 0) cat.dx = -cat.dx     // 격자 바깥(오른쪽) 방향으로 속도 정렬
+                }
+            } else {
+                if (cat.y + cat.height / 2 < target.y + target.height / 2) {
+                    cat.y = target.y - cat.height
+                    if (cat.dy > 0) cat.dy = -cat.dy
+                } else {
+                    cat.y = target.y + target.height
+                    if (cat.dy < 0) cat.dy = -cat.dy
+                }
             }
         }
     }

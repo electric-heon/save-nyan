@@ -99,7 +99,7 @@ class Game extends GameComponent {
 
         this.cat = new NyanCat(80, 282, this.catSpeed, this.catSkin)
         this.popTartManager = new PoptartManager(5, 5, 10, this.level, this.poptartSkin)
-        this.planetManager = new PlanetManager(this.level, this.getPlanetForbiddenAreas())
+        this.planetManager = new PlanetManager(this.level)
 
         this.score = 0
         this.life = 3
@@ -246,7 +246,7 @@ class Game extends GameComponent {
         this.bar = new Bar(30, 250, 15, 100, this.barSpeed)
         this.cat = new NyanCat(80, 282, this.catSpeed, this.catSkin)
         this.popTartManager = new PoptartManager(5, 5, 10, this.level, this.poptartSkin)
-        this.planetManager = new PlanetManager(this.level, this.getPlanetForbiddenAreas())
+        this.planetManager = new PlanetManager(this.level)
         this.score = 0
         this.life = 3
         this.combo = 0
@@ -254,16 +254,6 @@ class Game extends GameComponent {
         this.updateGameState()
         this.wormholeA.reset()
         this.wormholeB.reset()
-    }
-
-    //행성 배치 금지구역
-    getPlanetForbiddenAreas() {
-        return [
-            { x: 40, y: 210, width: 160, height: 180, padding: 45 },
-            { x: 540, y: 20, width: 420, height: 560, padding: 15 },
-            { x: 120, y: 0, width: 160, height: 600, padding: 15 },
-            { x: 800, y: 0, width: 180, height: 600, padding: 15 },
-        ]
     }
 
     // 왼쪽 벽 충돌 시 처리 
