@@ -396,7 +396,9 @@ class Game extends GameComponent {
             if (this.cat.isWormhole) {
                 this.cat.isWormhole = false; // 돌진 해제
                 this.cat.dx = -this.catSpeed; // 원래 속도로 반사
-                this.cat.dy *= this.catSkin/Math.abs(this.cat.dy);
+                // 돌진 중 커진 dy를 부호를 유지하며 원래 속도 크기로 복원 (dy가 0이면 NaN 방지)
+                const dySign = this.cat.dy < 0 ? -1 : 1;
+                this.cat.dy = dySign * this.catSpeed;
             } else {
                 this.cat.dx *= -1;
             }   
