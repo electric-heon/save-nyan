@@ -20,8 +20,8 @@
     color: white;
     font-family: "Press Start 2P";
     text-align: center;
-    margin-top: 150px;
-    font-size: 54px;
+    margin-top: 100px;
+    font-size: 78px;
 }
 
 .section {
@@ -33,7 +33,7 @@
 }
 
 .section > img {
-    width: 60%;
+    width: 55%;
 }
 
 .start > a {

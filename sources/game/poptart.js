@@ -17,8 +17,8 @@ class Poptart extends GameComponent{
         this.height = height
         this.flavor = flavor
         this.transparency = 0
-        this._durability = durability
-        this._hitCount = 0
+        this.durability = durability
+        this.hitCount = 0
 
         Poptart.loadImage(flavor)
     }
@@ -41,22 +41,6 @@ class Poptart extends GameComponent{
         )
     }
 
-    get hitCount() {
-        return this._hitCount
-    }
-
-    set hitCount(hitCount) {
-        this._hitCount = hitCount
-    }
-
-    get durability() {
-        return this._durability
-    }
-
-    set durability(durability) {
-        this._durability = durability
-    }
-
     draw() {
         const src = Poptart.images[this.flavor]
         GameComponent.context.globalAlpha = 1 - this.transparency
@@ -71,7 +55,7 @@ class Poptart extends GameComponent{
 }
 
 class PoptartManager extends GameComponent {
-    static durablePoptartNumber = [[2,0], [4,1], [8,3], [12, 5], [16, 10]]
+    static durablePoptartNumber = [[2,0], [4,1], [8,3], [12, 5], [16, 9]]
 
     constructor(row, col, gap, level, poptartSkin) {
         super()
@@ -244,6 +228,7 @@ class PoptartManager extends GameComponent {
                 if (this.map[i][j] == null) {
                     continue
                 }
+
                 if (this.map[i][j].collidesWith(cat)) {         // 충돌 후 방향 전환
                     const wasWormhole = cat.isWormhole
                     this.lastCollisionWasWormhole = wasWormhole

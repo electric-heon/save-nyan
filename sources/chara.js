@@ -14,6 +14,7 @@ const dialogueScripts = {
         { character: characters.villain,    text: "왔군, Nyan Cat. 어디 잡을 수 있다면 잡아봐!", portraitId: "villainPortrait" },
         { character: characters.girlfriend, text: "Nyan Cat...! 오지마! 이건 위험한 함정이야..!", portraitId: "girlfriendPortrait" },
         { character: characters.hero,       text: "걱정 마! 반드시 구하러 갈게!", portraitId: "heroPortrait" },
+        { character: null,                  text: "", portraitId: null, animation: "heroChase" },
     ],
     1: [
         { character: characters.villain,    text: "크... 이 구역은 통과했군. 하지만 아직 멀었다!", portraitId: "villainPortrait" },
@@ -22,6 +23,7 @@ const dialogueScripts = {
         { character: characters.girlfriend, text: "Nyan Cat... 저기가 더 위험해. 제발 조심해...", portraitId: "girlfriendPortrait" },
         { character: characters.hero,       text: "걱정 마, Cream Cat. 반드시 구하러 갈게!", portraitId: "heroPortrait" },
         { character: characters.villain,    text: "크하하! 감동적이군. 어디 따라와 봐!", portraitId: "villainPortrait" },
+        { character: null,                  text: "", portraitId: null, animation: "heroChase" },
     ],
     2: [
         { character: characters.villain,    text: "또 여기까지 왔군... 생각보다 질기네.", portraitId: "villainPortrait" },
@@ -30,6 +32,7 @@ const dialogueScripts = {
         { character: characters.villain,    text: "흥, 아직 멀었다고. 포기해라!", portraitId: "villainPortrait" },
         { character: characters.hero,       text: "절대 포기 안 해. 지금 가고 있어, Cream Cat!", portraitId: "heroPortrait" },
         { character: characters.villain,    text: "두고 봐라... 더 깊은 곳으로 끌고 가주지!", portraitId: "villainPortrait" },
+        { character: null,                  text: "", portraitId: null, animation: "heroChase" },
     ],
     3: [
         { character: characters.villain,    text: "크... 여기까지 쫓아오다니. 보통 놈이 아니군.", portraitId: "villainPortrait" },
@@ -37,15 +40,9 @@ const dialogueScripts = {
         { character: characters.girlfriend, text: "Nyan Cat!! 한 구역만 더야! 포기하지 마!!", portraitId: "girlfriendPortrait" },
         { character: characters.villain,    text: "마지막 구역에서 끝장을 봐주지. 각오해라!", portraitId: "villainPortrait" },
         { character: characters.hero,       text: "덤벼! 이번엔 절대 놓치지 않을 거야!", portraitId: "heroPortrait" },
+        { character: null,                  text: "", portraitId: null, animation: "heroChase" },
     ],
     4: [
-        { character: characters.villain,    text: "...놀랍군. 여기까지 올 줄은 정말 몰랐어.", portraitId: "villainPortrait" },
-        { character: characters.hero,       text: "끝이야, Dark Choco Cat. 이제 더 도망칠 곳 없어!", portraitId: "heroPortrait" },
-        { character: characters.girlfriend, text: "Nyan Cat!! 드디어...! 마지막이야, 힘내!!!", portraitId: "girlfriendPortrait" },
-        { character: characters.villain,    text: "크... 어디 마지막 힘을 보여주지! 절대 포기 안 해!", portraitId: "villainPortrait" },
-        { character: characters.hero,       text: "Cream Cat, 지금 간다!!!", portraitId: "heroPortrait" },
-    ],
-    5: [
         { character: characters.villain,    text: "하하... 드디어 여기까지 왔군. 하지만 이미 늦었다.", portraitId: "villainPortrait" },
         { character: characters.hero,       text: "Dark Choco Cat! Cream Cat는 어디 있지? 당장 그녀를 돌려줘!", portraitId: "heroPortrait" },
         { character: characters.villain,    text: "돌려달라고? 어림도 없지. 나는 그녀를 내 시종으로 부릴것이다.", portraitId: "villainPortrait" },
@@ -55,6 +52,8 @@ const dialogueScripts = {
         { character: characters.villain,    text: "크하하! 정말 눈물겹군. 그럼 어디 실력 발휘 좀 해보시지!", portraitId: "villainPortrait", animation: "escapeRight" },
         { character: characters.hero,       text: "거기서!!!", portraitId: "heroPortrait", animation: "heroShout" },
         { character: null,                  text: "", portraitId: null, animation: "heroChase" },
+    ],
+    5: [
         { character: characters.villain,    text: "크윽 내가 따라잡히다니", portraitId: "villainPortrait", animation: "villainCaught" },
         { character: null,                  text: "", portraitId: null, animation: "villainVanished" },
         { character: null,                  text: "", portraitId: null, animation: "heroMeet" },

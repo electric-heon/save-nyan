@@ -322,16 +322,16 @@ class Game extends GameComponent {
                 this.barSpeed = 20
                 break
             case 3:
+                this.catSpeed = 6
+                this.barSpeed = 22
+                break
+            case 4:
                 this.catSpeed = 7
                 this.barSpeed = 24
                 break
-            case 4:
+            case 5:
                 this.catSpeed = 8
                 this.barSpeed = 28
-                break
-            case 5:
-                this.catSpeed = 9
-                this.barSpeed = 32
                 break
         }
 
@@ -403,14 +403,13 @@ class Game extends GameComponent {
         if (this.cat.x + this.cat.width > GameComponent.canvasWidth) {
             
             this.cat.x = GameComponent.canvasWidth - this.cat.width;
-            this.cat.dx *= -1;
-            // if (this.cat.isWormhole) {
-            //     this.cat.isWormhole = false; // 돌진 해제
-            //     this.cat.dx = -this.catSpeed; // 원래 속도로 반사
-            //     this.cat.dy *= this.catSkin/Math.abs(this.cat.dy);
-            // } else {
-            //     this.cat.dx *= -1;
-            // }   
+            if (this.cat.isWormhole) {
+                this.cat.isWormhole = false; // 돌진 해제
+                this.cat.dx = -this.catSpeed; // 원래 속도로 반사
+                this.cat.dy *= this.catSkin/Math.abs(this.cat.dy);
+            } else {
+                this.cat.dx *= -1;
+            }   
         }
 
                 
@@ -440,7 +439,7 @@ class Game extends GameComponent {
             this.score += this.combo * 7
             this.maxCombo = Math.max(this.combo, this.maxCombo)
 
-            if (this.size < 1.5) {
+            if (this.size < 1.3) {
                 this.size += this.sizeStep
                 this.cat.resize(this.size)
                 if (!this.popTartManager.lastCollisionWasWormhole) {
