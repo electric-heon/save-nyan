@@ -154,7 +154,9 @@ class Game extends GameComponent {
             if (e.key === 'c' || e.key === 'C') {
                 if (this.isStarted) {
                     if (this.level == 5) {
-                        // 마지막 스테이지: play 루프에서 finalClear가 매 프레임 호출되도록 플래그 설정
+                        // 마지막 스테이지: 남은 팝타르트를 제거해 엔딩 연출 중 고양이가 가려지지 않도록 함
+                        this.popTartManager.clearAll()
+                        // play 루프에서 finalClear가 매 프레임 호출되도록 플래그 설정
                         this.forceFinalClear = true
                     } else {
                         this.showStageClear()
