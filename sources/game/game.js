@@ -148,6 +148,35 @@ class Game extends GameComponent {
                 }
             }
         })
+
+        // [시연용] 'c' 키 입력 시 현재 스테이지 즉시 클리어
+        window.addEventListener("keydown", (e) => {
+            if (e.key === 'c' || e.key === 'C') {
+                if (this.isStarted) {
+                    if (this.level == 5) {
+                        // 마지막 스테이지: play 루프에서 finalClear가 매 프레임 호출되도록 플래그 설정
+                        this.forceFinalClear = true
+                    } else {
+                        this.showStageClear()
+                    }
+                }
+            }
+        })
+    }
+
+    // 스테이지 클리어 처리 (팝타르트 모두 획득 시 또는 시연용 단축키)
+    showStageClear() {
+        cancelAnimationFrame(this.requestID)
+        this.isPlaying = false
+        this.isStarted = false
+
+        const stageClearPopup = document.querySelector('.stage_clear')
+        const stageClearScore = document.querySelector('#stageclear_score')
+        const stageClearMaxCombo = document.querySelector('#stageclear_maxcombo')
+
+        stageClearPopup.style.display = 'flex'
+        stageClearScore.innerHTML = this.score
+        stageClearMaxCombo.innerHTML = this.maxCombo
     }
 
     applySettings(settings) {
@@ -333,22 +362,12 @@ class Game extends GameComponent {
     updateCat() {              
         
         // 스테이지 클리어 확인
-        if (this.popTartManager.isCleared()) {
+        if (this.forceFinalClear || this.popTartManager.isCleared()) {
             if(this.level == 5) {
                 this.finalClear();
                 return;
             }
-            cancelAnimationFrame(this.requestID)
-            this.isPlaying = false
-            this.isStarted = false
-            
-            const stageClearPopup = document.querySelector('.stage_clear')
-            const stageClearScore = document.querySelector('#stageclear_score')
-            const stageClearMaxCombo = document.querySelector('#stageclear_maxcombo')
-
-            stageClearPopup.style.display = 'flex'
-            stageClearScore.innerHTML = this.score
-            stageClearMaxCombo.innerHTML = this.maxCombo
+            this.showStageClear()
             return
         }
         

@@ -353,6 +353,18 @@ class PoptartManager extends GameComponent {
         return false
     }
 
+    // 모든 팝타르트 제거 (시연용 스테이지 스킵 등)
+    clearAll() {
+        for (let i = 0; i < this.row; i++) {
+            for (let j = 0; j < this.col; j++) {
+                if (this.map[i][j] != null) {
+                    this.map[i][j].erase()
+                    this.map[i][j] = null
+                }
+            }
+        }
+    }
+
     isCleared() {
         for (let i = 0; i < this.row; i++) {
             for (let j = 0; j < this.col; j++) {
