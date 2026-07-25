@@ -1,3 +1,4 @@
+<<<<<<< develop
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -7,8 +8,19 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="game.css">
-    <script src="game.js"></script>
+	<link rel="stylesheet" href="settings.css">
+	<title>SUPER NYAN</title>
+	<link rel="icon" type="image/x-icon" href="assets/images/planet-3.png">
 </head>
+<script src="sources/game/GameComponent.js"></script>
+<script src="sources/game/Bar.js"></script>
+<script src="sources/game/NyanCat.js"></script>
+<script src="sources/game/Poptart.js"></script>
+<script src="sources/game/Wormhole.js"></script>
+<script src="sources/game/Planet.js"></script>
+<script src="sources/game/Game.js"></script>
+<script src="sources/settings.js"></script>
+
 <body>
 	<div class="container">
 		<div class="section">
@@ -18,10 +30,52 @@
 				<div id="combo">Combo: 0</div>	
 			</div>
 
-			<div id="setting">Setting</div>
+			<div id="level">Stage 0</div>
 		</div>
-		
-		<canvas id="game" width="1000" height="600"></canvas>
-		
+		<canvas id="game" width="1000" height="600"></canvas>		
 	</div>
+	<div class="game_over">
+		<div class="game_over_title">GAME OVER</div>
+		<div class="game_over_status">
+			<div class="game_over_list">
+				<div class="game_over_list_item">
+					<div class="game_over_list_title">Score</div>
+					<div class="game_over_list_value" id="gameover_score">0</div>
+				</div>
+				<div class="game_over_list_item">
+					<div class="game_over_list_title">Max Combo</div>
+					<div class="game_over_list_value" id="gameover_maxcombo">0</div>
+				</div>
+			</div>
+		</div>
+		<div class="game_over_buttons">
+			<div id="retry">Retry</div>
+			<div id="quit">Quit</div>
+		</div>
+	</div>
+	<div class="stage_clear">
+		<div class="stage_clear_title">STAGE CLEAR!</div>
+		<div class="stage_clear_status">
+			<div class="stage_clear_list">
+				<div class="stage_clear_list_item">
+					<div class="stage_clear_list_title">Score</div>
+					<div class="stage_clear_list_value" id="stageclear_score">0</div>
+				</div>
+				<div class="stage_clear_list_item">
+					<div class="stage_clear_list_title">Max Combo</div>
+					<div class="stage_clear_list_value" id="stageclear_maxcombo">0</div>
+				</div>
+			</div>
+		</div>
+		<div class="stage_clear_buttons">
+			<div id="next_stage">Next</div>
+			<div id="stageclear_quit">Quit</div>
+		</div>
+	</div>
+	<div class="menu">
+		<div class="menu_button" id="resume_button">Resume</div>
+		<div class="menu_button" id="setting_button">Setting</div>
+		<div class="menu_button" id="quit_button">Quit</div>
+	</div>
+	<game-settings></game-settings>
 </body>

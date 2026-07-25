@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="main.css">
+    <link rel="stylesheet" href="settings.css">
+    <link rel="icon" type="image/x-icon" href="assets/images/planet-3.png">
+    <title>SUPER NYAN</title>
+</head>
+<script src="sources/main.js"></script>
+<script src="sources/settings.js"></script>
+<body>
+    <div class="header">
+        <div class="title">SUPER<br/>NYAN</div>
+    </div>
+    <div class="section">
+        <img src="assets/images/start.gif"/>
+        <div class="start">
+            <a href="chara.html" onclick="localStorage.setItem('charaLevel','0')">
+                Start
+            </a>
+        </div>
+    </div>
+    <div class="setting">
+        Setting
+    </div>
+    <game-settings></game-settings>
+</body>
+</html>
